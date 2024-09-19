@@ -1,0 +1,277 @@
+[
+    {
+        "Measure": "Faturamento LY",
+        "Formula": "CALCULATE ( [Faturamento], SAMEPERIODLASTYEAR ( dCalendario[Data] ) ) formatString: \"R$\"\\ #,0.00;-\"R$\"\\ #,0.00;\"R$\"\\ #,0.00 displayFolder: Faturamento/Devoluções lineageTag: cc09c598-e86e-48ad-a972-2ffc7185cff8  changedProperty = FormatString  annotation PBI_FormatHint = {\"currencyCulture\":\"pt-BR\"}",
+        "Analysis": "Essa fórmula calcula o faturamento do mesmo período do ano anterior. Em outras palavras, ela compara o faturamento atual com o mesmo período do ano passado. Por exemplo, se você verificar o"
+    },
+    {
+        "Measure": "Faturamento",
+        "Formula": "CALCULATE ( SUM ( fVendas[Valor] ), fVendas[Status] = \"Venda\" ) formatString: \"R$\"\\ #,0.00;-\"R$\"\\ #,0.00;\"R$\"\\ #,0.00 displayFolder: Faturamento/Devoluções lineageTag: 4f0e9801-7fcb-4f35-9e69-8174e0ab6dc4  changedProperty = FormatString  annotation PBI_FormatHint = {\"currencyCulture\":\"pt-BR\"}",
+        "Analysis": "Essa fórmula calcula o total de valor das vendas efetivas, excluindo devoluções. O resultado é exibido em formato de moeda brasileira (R$) com duas casas decimais. Representa o faturamento total"
+    },
+    {
+        "Measure": "Unidades Vendidas",
+        "Formula": "CALCULATE ( SUM ( fVendas[Qtde] ), fVendas[Status] = \"Venda\" ) formatString: #,0 displayFolder: Faturamento/Devoluções lineageTag: 58647c58-6c26-43e3-92fc-11528efb873b  changedProperty = FormatString",
+        "Analysis": "\"Fórmula que soma a quantidade de itens vendidos quando o status é 'Venda', excluindo devoluções.\""
+    },
+    {
+        "Measure": "Produto Selecionado",
+        "Formula": "\"Detalhamento do Veículo \" & SELECTEDVALUE ( dProdutos[Produto] ) displayFolder: Auxiliares lineageTag: 599900b2-e13b-4309-9f62-84f9b4df917c",
+        "Analysis": "\"Detalhamento do Veículo\" é uma funcionalidade que exibe informações específicas do veículo selecionado, como características e acessórios, capturadas pelo sistema de gestão. Ele ajuda a imprimir"
+    },
+    {
+        "Measure": "Devoluções",
+        "Formula": "CALCULATE ( SUM ( fVendas[Valor] ), fVendas[Status] = \"Devolução\" ) formatString: \"R$\"\\ #,0.00;-\"R$\"\\ #,0.00;\"R$\"\\ #,0.00 displayFolder: Faturamento/Devoluções lineageTag: 7f2dd962-3519-42a7-9836-1914ec9ea025  changedProperty = FormatString  annotation PBI_FormatHint = {\"currencyCulture\":\"pt-BR\"}",
+        "Analysis": "\"Valor Total de Devoluções: Esse valor representa o montante total de vendas devolvidas, expresso em reais brasileiros (R$). Ele ajuda a entender o impacto das devoluções nos faturamentos das"
+    },
+    {
+        "Measure": "Descontos",
+        "Formula": "VAR _PrecoBruto = CALCULATE ( SUMX ( fVendas, fVendas[Qtde] * RELATED ( dProdutos[Preco] ) ), fVendas[Status] = \"Venda\" ) VAR _PrecoVenda = [Faturamento] RETURN _PrecoBruto - _PrecoVenda formatString: \"R$\"\\ #,0.###############;-\"R$\"\\ #,0.###############;\"R$\"\\ #,0.############### displayFolder: Faturamento/Devoluções lineageTag: b7c2a747-5acc-48cd-b6c4-24a3f1af3e4e  annotation PBI_FormatHint = {\"currencyCulture\":\"pt-BR\"}",
+        "Analysis": "Essa fórmula calcula o valor total das devoluções de vendas. Ela soma o custo dos produtos devolvidos (preço bruto) e subtrai o faturamento (preço de venda) para obter o valor líquido da devolução."
+    },
+    {
+        "Measure": "Categoria Selecionada",
+        "Formula": "SELECTEDVALUE ( dProdutos[NomeCategoria] ) displayFolder: Auxiliares lineageTag: 53b10b60-73fe-43e9-a17c-ba1ad592d7d9",
+        "Analysis": "A fórmula \"SELECTEDVALUE ( dProdutos[NomeCategoria] )\" se refere ao valor da categoria de produto selecionada atualmente. No contexto de uso das impressoras, representa a categoria do produto que"
+    },
+    {
+        "Measure": "Meta",
+        "Formula": "SUM ( fMetas[Meta] ) formatString: \"R$\"\\ #,0.00;-\"R$\"\\ #,0.00;\"R$\"\\ #,0.00 displayFolder: Metas lineageTag: 1b4448fd-8cc5-4c2d-98d1-7088bc3afeb8  changedProperty = FormatString  annotation PBI_FormatHint = {\"currencyCulture\":\"pt-BR\"}",
+        "Analysis": "\"Essa fórmula calcula a soma das metas de vendas. O resultado é exibido em formato de moeda (R$) com duas casas decimais. Representa o total de metas de vendas alcançadas.\""
+    },
+    {
+        "Measure": "Diferença Meta",
+        "Formula": "[Meta] - [Faturamento] formatString: \"R$\"\\ #,0.00;-\"R$\"\\ #,0.00;\"R$\"\\ #,0.00 displayFolder: Metas lineageTag: 8b6f4814-9e95-4169-b206-2548e1bec16e  changedProperty = FormatString  annotation PBI_FormatHint = {\"currencyCulture\":\"pt-BR\"}",
+        "Analysis": "Essa fórmula calcula o \"Déficit de Meta\". Ou seja, é a diferença entre a meta de faturamento estabelecida e o faturamento real obtido. Representa o quanto a empresa ainda precisa vender para atingir"
+    },
+    {
+        "Measure": "Var % Meta",
+        "Formula": "DIVIDE ( [Faturamento] - [Meta], [Faturamento] ) formatString: 0.00%;-0.00%;0.00% displayFolder: Metas lineageTag: 4595838e-7c70-40ab-b36f-1333078aafac  changedProperty = FormatString",
+        "Analysis": "Essa fórmula calcula o percentual em que o faturamento atual se aproxima ou ultrapassa a meta estabelecida. O resultado mostrará se você está acima (positivo), abaixo (negativo) ou igual (zero) à sua"
+    },
+    {
+        "Measure": "Data",
+        "Formula": "VAR _MenorMes = MONTH ( FIRSTDATE ( dCalendario[Data] ) ) VAR _MenorAno = MIN ( dCalendario[Ano] ) VAR _AnoSelecionado = SELECTEDVALUE ( dCalendario[Ano] ) VAR _MesSelecionado = SELECTEDVALUE ( dCalendario[MesAbre] ) VAR _MenorData = MIN ( dCalendario[Data] ) VAR _MaiorData = MAX ( dCalendario[Data] ) RETURN _MenorData & \" a \" & _MaiorData displayFolder: Auxiliares lineageTag: e61b398c-3cd6-4085-bef3-f067138c74d0",
+        "Analysis": "A fórmula calcula o período de tempo que os dados de impressão estão disponíveis. Ela retorna a data inicial e final do banco de dados, mostrando o intervalo de tempo que os dados são exibidos, ou"
+    },
+    {
+        "Measure": "Max Grafico Meta",
+        "Formula": "[Faturamento] + ( [Faturamento] * 0.5 ) formatString: \"R$\"\\ #,0.###############;-\"R$\"\\ #,0.###############;\"R$\"\\ #,0.############### displayFolder: Auxiliares lineageTag: 960db4d2-4cda-4060-a691-6f3b6a981d3e  annotation PBI_FormatHint = {\"currencyCulture\":\"pt-BR\"}",
+        "Analysis": "Essa fórmula calcula o valor total faturado, mais 50% desse valor. Representa um aumento de 50% no faturamento. No contexto de impressoras, pode ser usado para calcular o valor total de uma venda,"
+    },
+    {
+        "Measure": "Formatação Condicional",
+        "Formula": "SWITCH ( TRUE (), [Faturamento] >= [Meta], \"#00FA9A\", \"#B22222\" ) displayFolder: Auxiliares lineageTag: 5d49e3f0-8902-4f3e-b135-ec53446dd6d9",
+        "Analysis": "Essa fórmula é usada para definir cores em um gráfico ou relatório, com base em metas de faturamento. \n\nSe o faturamento for igual ou superior à meta, o valor exibido será verde (#00FA9A), indicando"
+    },
+    {
+        "Measure": "% Devoluções",
+        "Formula": "DIVIDE ( [Devoluções], [Faturamento] ) formatString: 0.00%;-0.00%;0.00% displayFolder: Faturamento/Devoluções lineageTag: 186da866-8c5b-4aef-9c6e-cc659872d9a5  changedProperty = FormatString",
+        "Analysis": "\"Fórmula de Taxa de Devoluções: Calcula o percentual de devoluções em relação ao faturamento total. Representa a proporção de vendas devolvidas em relação ao total de vendas realizadas, ajudando a"
+    },
+    {
+        "Measure": "Faturamento Líquido",
+        "Formula": "[Faturamento] - [Devoluções] formatString: \"R$\"\\ #,0.00;-\"R$\"\\ #,0.00;\"R$\"\\ #,0.00 displayFolder: Faturamento/Devoluções lineageTag: f490f4c9-a334-4547-9e36-d441019f5a08  changedProperty = FormatString  annotation PBI_FormatHint = {\"currencyCulture\":\"pt-BR\"}",
+        "Analysis": "\"Faturamento Líquido: representa o total de vendas realizadas deduzindo as devoluções de produtos, mostrando o valor real recebido após ajustes.\""
+    },
+    {
+        "Measure": "Em Branco",
+        "Formula": "\"\" displayFolder: Auxiliares lineageTag: 2119905c-e28b-4384-8a65-7ae485a3f55b",
+        "Analysis": "Essa fórmula refere-se a uma etiqueta (tag) de identificação única para um determinado conjunto de configurações e modelos de impressão. O valor \"displayFolder: Auxiliares\" indica que essa etiqueta"
+    },
+    {
+        "Measure": "IFrame",
+        "Formula": "\"<!DOCTYPE html> <html> <body> <iframe title='CarSales-DesafioDashmaker2 - Página 1' width='1280' height='720' src='https://app.powerbi.com/view?r=eyJrIjoiYTE4YWY2MzItOWJmOS00MTJlLWFlODktYjk3YzU4OTljYzNhIiwidCI6ImMwZTRmYzIyLTk1YWItNDZjZi05YzI4LWZmNWNjMWIxMGYzYyJ9' frameborder='0' allowFullScreen='true'></iframe> </body> </html>\" displayFolder: Auxiliares lineageTag: 45e3c020-58c3-4e73-9987-06390be79622",
+        "Analysis": "Essa fórmula é um código HTML que cria um quadro (iframe) para exibir um gráfico ou relatório de desempenho de vendas de carros. Ela não está relacionada a impressoras, mas sim a uma apresentação de"
+    },
+    {
+        "Measure": "Dias Úteis",
+        "Formula": "SUM(dCalendario[Dia útil]) formatString: 0 displayFolder: Metas lineageTag: da931260-b9d1-4614-83a3-eecbe3847052",
+        "Analysis": "\"Essa fórmula soma o número total de dias úteis no calendário. No contexto de uso de impressoras, isso ajuda a calcular a disponibilidade e produtividade das máquinas durante o período de trabalho,"
+    },
+    {
+        "Measure": "Meta Diluida",
+        "Formula": "```   VAR _MetaMensal = CALCULATE( [Meta], ALL(dCalendario), VALUES(dCalendario[MesAno]) ) VAR _Dias = CALCULATE( [Dias Úteis], ALL(dCalendario), VALUES(dCalendario[MesAno]) ) RETURN DIVIDE(_MetaMensal,_Dias) ``` formatString: \"R$\"\\ #,0.00;-\"R$\"\\ #,0.00;\"R$\"\\ #,0.00 displayFolder: Metas lineageTag: 47a6e21b-7e8e-4f5c-8c16-2227f4447526  changedProperty = FormatString  annotation PBI_FormatHint = {\"currencyCulture\":\"pt-BR\"}",
+        "Analysis": "\"Meta Diária: Representa o valor da meta mensal dividido pelo número de dias úteis do mês. É um valor estimado que visa ajudar a gerenciar e alcançar a meta de impressões mensal, considerando apenas"
+    },
+    {
+        "Measure": "Pareto Produtos",
+        "Formula": "```  VAR _FaturamentoTotal = CALCULATE( [Faturamento], ALLSELECTED(dProdutos[Produto]) ) VAR _FaturamentoAtual = [Faturamento] Var _Tabela = SUMMARIZE( ALLSELECTED(fVendas), dProdutos[Produto], \"@Vendas\", [Faturamento] ) VAR _FaturamentoAcumulado = IF( [Faturamento] > 0, SUMX( FILTER(_Tabela, [@Vendas] >= _FaturamentoAtual), [Faturamento] ) ) RETURN DIVIDE(_FaturamentoAcumulado,_FaturamentoTotal)  ``` formatString: #,0.00%;-#,0.00%;#,0.00% displayFolder: Pareto lineageTag: fae8d5e2-4203-484c-aa0e-ed776a03d796  changedProperty = FormatString",
+        "Analysis": "\"A porcentagem acumulada de faturamento representa a participação relativa do faturamento atual dentro do total do faturamento. No contexto das impressoras, essa métrica indica quais produtos ou"
+    },
+    {
+        "Measure": "Faturamento Acumulado",
+        "Formula": "VAR _FaturamentoAtual = [Faturamento] Var _Tabela = SUMMARIZE( ALLSELECTED(fVendas), dProdutos[Produto], \"@Vendas\", [Faturamento] ) VAR _FaturamentoAcumulado = IF( [Faturamento] > 0, SUMX( FILTER(_Tabela, [@Vendas] >= _FaturamentoAtual), [Faturamento] ) ) RETURN _FaturamentoAcumulado formatString: \"R$\"\\ #,0.###############;-\"R$\"\\ #,0.###############;\"R$\"\\ #,0.############### displayFolder: Pareto lineageTag: e2c17572-e573-41f3-830a-258f6a130486  annotation PBI_FormatHint = {\"currencyCulture\":\"pt-BR\"}",
+        "Analysis": "Essa fórmula representa o \"Faturamento Acumulado\" das vendas das impressoras. Ela soma o faturamento atual com os faturamentos de vendas superiores. É uma medida para visualizar as vendas mais"
+    },
+    {
+        "Measure": "Classificação ABC",
+        "Formula": "IF(ISINSCOPE(dProdutos[Produto]), SWITCH( TRUE(), [Pareto Produtos] <= 0.8, \"A\", [Pareto Produtos] <= 0.9, \"B\", \"C\" ) ) displayFolder: Pareto lineageTag: fd39baab-2897-4a17-93cd-d90457b7f4df",
+        "Analysis": "\"Fórmula de classificação de produtos por pareto. Verifica se o produto está em escopo e, se estiver, atribui um nível de prioridade (A, B ou C) com base no seu percentual de participação na linha de"
+    },
+    {
+        "Measure": "Cores ABC",
+        "Formula": "SWITCH( TRUE(), [Classificação ABC] = \"A\", \"#32CD32\", [Classificação ABC] = \"B\", \"#FFD700\", [Classificação ABC] = \"C\", \"#DC143C\" ) displayFolder: Pareto lineageTag: c47f7298-f955-4cd5-91e6-9ca000e3db6a",
+        "Analysis": "A fórmula é usada para classificar itens em categorias A, B ou C e atribuir cores específicas. Representa três níveis de prioridade, geralmente usada na análise de Pareto para avaliar a distribuição"
+    },
+    {
+        "Measure": "Ranking Produtos",
+        "Formula": "RANKX( ALL(dProdutos[Produto]),[Faturamento]) formatString: 0 displayFolder: Pareto lineageTag: 88aff4c7-49a8-4c36-9a77-21cb59ea83e3",
+        "Analysis": "Essa fórmula é usada para criar uma classificação (ranking) dos produtos com base no faturamento gerado. Em outras palavras, ela lista os produtos em ordem de maior para menor faturamento, permitindo"
+    },
+    {
+        "Measure": "Top 5 Produtos Unidades",
+        "Formula": "CALCULATE ( [Unidades Vendidas], TOPN ( 5, ALLSELECTED ( dProdutos[Produto] ), [Unidades Vendidas] ), VALUES ( dProdutos[Produto] ) ) formatString: #,0 displayFolder: Auxiliares lineageTag: 55ec2838-a7df-4c38-9eb5-a3447338befc  changedProperty = FormatString",
+        "Analysis": "Essa fórmula calcula as 5 unidades de produtos mais vendidos. Ela retorna o valor total de unidades vendidas apenas para os 5 produtos mais vendidos, considerando todos os produtos selecionados. É"
+    },
+    {
+        "Measure": "Vendas",
+        "Formula": "--[Valor] (dProdutos[Segmento] = \"Compacto\")  /* é a mesma coisa que a Medida Abaixo */ CALCULATE( [Valor], FILTER( ALL(dProdutos[Segmento]), dProdutos[Segmento] = \"Compacto\" )) formatString: \"R$\"\\ #,0;-\"R$\"\\ #,0;\"R$\"\\ #,0 displayFolder: Auxiliares lineageTag: 6df187a1-7543-44b1-bfe2-d8b916518211  changedProperty = FormatString  annotation PBI_FormatHint = {\"currencyCulture\":\"pt-BR\"}",
+        "Analysis": "\"Somatório do valor de produtos do segmento 'Compacto'. Representa o valor total das impressoras compactas vendidas ou utilizadas.\""
+    },
+    {
+        "Measure": "Valor",
+        "Formula": "SUM(fVendas[Valor]) formatString: \"R$\"\\ #,0.00;-\"R$\"\\ #,0.00;\"R$\"\\ #,0.00 displayFolder: Auxiliares lineageTag: 0a0a4105-243e-4244-b834-e3f6196e90e2  changedProperty = FormatString  annotation PBI_FormatHint = {\"currencyCulture\":\"pt-BR\"}",
+        "Analysis": "\"Fórmula de cálculo do valor total de vendas em reais (R$) com duas casas decimais. Representa o montante arrecadado com a venda de produtos, exibido no formato de moeda brasileira.\""
+    },
+    {
+        "Measure": "Maior Venda",
+        "Formula": "VAR _MaiorVenda = MAXX( dProdutos, [Faturamento])  VAR _Percentual = _MaiorVenda * 0.8  RETURN _Percentual formatString: \"R$\"\\ #,0.###############;-\"R$\"\\ #,0.###############;\"R$\"\\ #,0.############### displayFolder: Auxiliares lineageTag: 3b963253-5588-406b-8e92-1e2846572b94  annotation PBI_FormatHint = {\"currencyCulture\":\"pt-BR\"}",
+        "Analysis": "\"Meta de Venda: 80% do Maior Faturamento. Representa 80% do valor do maior faturamento de uma impressora. É o objetivo de venda para manter uma performance alta.\""
+    },
+    {
+        "Measure": "Verifica Mês Atual",
+        "Formula": "IF(MAX(dCalendario[Data])<DATE(YEAR(TODAY()),MONTH(TODAY()),1),1,0) formatString: 0 displayFolder: Auxiliares lineageTag: 184661c6-3370-4b8f-a278-685b64d87d61",
+        "Analysis": "\"Essa fórmula verifica se a última data do calendário é anterior ao início do mês corrente. Se for, retorna 1, caso contrário retorna 0. Em contexto de impressoras, representa um indicador de se o"
+    },
+    {
+        "Measure": "Vendas - Mês Atual",
+        "Formula": "CALCULATE( [Faturamento], fVendas[Data] < EOMONTH(MAX(dCalendario[Data]),-1)) formatString: \"R$\"\\ #,0.###############;-\"R$\"\\ #,0.###############;\"R$\"\\ #,0.############### displayFolder: Auxiliares lineageTag: 238fbb67-d6a5-4b8b-a244-6fd94d19a5ea  annotation PBI_FormatHint = {\"currencyCulture\":\"pt-BR\"}",
+        "Analysis": "Essa fórmula calcula o faturamento total das vendas realizadas até o último dia do mês anterior. Representa o valor total arrecadado com vendas das impressoras até a data limite do mês anterior,"
+    },
+    {
+        "Measure": "Maior Valor",
+        "Formula": "MAX(dProdutos[Preco]) formatString: \"R$\"\\ #,0.###############;-\"R$\"\\ #,0.###############;\"R$\"\\ #,0.############### displayFolder: Auxiliares lineageTag: cdf6e122-d65c-45aa-b636-522009336079  annotation PBI_FormatHint = {\"currencyCulture\":\"pt-BR\"}",
+        "Analysis": "\"A fórmula MAX(dProdutos[Preco]) exibe o valor máximo do preço dos produtos. É apresentado em formato de moeda real (R$) com casas decimais. No contexto das impressoras, isso representa o preço"
+    },
+    {
+        "Measure": "Maior Produto",
+        "Formula": "```  TOPN(1,ALLSELECTED(dProdutos[Produto]),Medidas[Maior Valor],)  ``` displayFolder: Auxiliares lineageTag: 7fd149e3-5cb9-4de2-9030-23d088681a28",
+        "Analysis": "\"Essa fórmula retorna o produto com maior valor de vendas entre todos os produtos, independentemente da seleção atual.\""
+    },
+    {
+        "Measure": "Meta Acima",
+        "Formula": "IF ([Meta] > [Faturamento],[Meta],BLANK()) formatString: \"R$\"\\ #,0.###############;-\"R$\"\\ #,0.###############;\"R$\"\\ #,0.############### displayFolder: Metas lineageTag: 95ab73ae-4783-46ce-97e8-de80ad0ab4da  annotation PBI_FormatHint = {\"currencyCulture\":\"pt-BR\"}",
+        "Analysis": "\"Essa fórmula calcula a diferença entre a Meta de Faturamento e o Faturamento Real. Se a Meta for maior que o Faturamento, exibe o valor da Meta; caso contrário, exibe um espaço em branco. Representa"
+    },
+    {
+        "Measure": "Meta Abaixo",
+        "Formula": "IF ([Meta] < [Faturamento],[Meta],BLANK()) formatString: \"R$\"\\ #,0.00;-\"R$\"\\ #,0.00;\"R$\"\\ #,0.00 displayFolder: Metas lineageTag: d76f7938-6461-4509-97db-2ff0f1a2c22a  changedProperty = FormatString  annotation PBI_FormatHint = {\"currencyCulture\":\"pt-BR\"}",
+        "Analysis": "\"Representa a meta de faturamento atingida ou não atingida. Mostra o valor da meta se o faturamento for maior ou igual, caso contrário, exibe o valor negativo do faturamento real.\""
+    },
+    {
+        "Measure": "Qtde Produtos acima 80%",
+        "Formula": "COUNTROWS( FILTER( VALUES(dProdutos[Produto]), [Fat Acumulado %] <= 0.8) ) formatString: 0 lineageTag: c96d2129-e95d-4b28-9d3b-ffbef406e2cc",
+        "Analysis": "\"Essa fórmula calcula o número de produtos na tabela 'dProdutos' que atendem à condição de ter um 'Faturamento Acumulado' menor ou igual a 80%. Isso significa que o valor representa a quantidade de"
+    },
+    {
+        "Measure": "Subtitulo Pareto",
+        "Formula": "```  [Qtde Produtos acima 80%] & \" Produtos representam 80% do Faturamento no total de \" & FORMAT([Fatuamento Produtos 80%],\"R$ #,#00.00\") & UNICHAR(10) & \"Qtde A: \" & [Qtde Produto A] & \"  -  Qtde B: \" & [Qtde Produto B] & \"  -  Qtde C: \" & [Qtde Produto C] ``` lineageTag: e49ee483-94af-4bfe-9b52-c40a0f5a9345",
+        "Analysis": "\"Essa fórmula calcula e exibe a quantidade de produtos que representam 80% do faturamento total, mostrando também a quantidade de cada produto (A, B e C) separadamente. Representa o desempenho"
+    },
+    {
+        "Measure": "Fatuamento Produtos 80%",
+        "Formula": "SUMX( FILTER( VALUES(dProdutos[Produto]), [Pareto Produtos] <= 0.8) ,[Faturamento]) formatString: \"R$\"\\ #,0.00;-\"R$\"\\ #,0.00;\"R$\"\\ #,0.00 lineageTag: fcf6d2a2-8225-4cc2-8343-bb3e1dad0ff5  annotation PBI_FormatHint = {\"currencyCulture\":\"pt-BR\"}",
+        "Analysis": "\"O valor mostra o faturamento total dos produtos que respondem por 80% do faturamento geral, de acordo com a regra de Pareto. Em outras palavras, é o dinheiro gerado pelas impressoras mais rentáveis"
+    },
+    {
+        "Measure": "Fat Acumulado SUMX",
+        "Formula": "```  VAR _FaturamentoAtual = [Faturamento] VAR _Tabela = SUMMARIZE( ALLSELECTED(fVendas), dProdutos[Produto], \"@Faturamento\", [Faturamento] ) VAR _Acumulado = IF( [Faturamento] > 0, SUMX( FILTER(_Tabela,[@Faturamento] >= _FaturamentoAtual), [Faturamento] )) RETURN _Acumulado ``` formatString: \"R$\"\\ #,0.00;-\"R$\"\\ #,0.00;\"R$\"\\ #,0.00 lineageTag: 43accdf9-55bc-4904-9ff5-309fd2237b1e  annotation PBI_FormatHint = {\"currencyCulture\":\"pt-BR\"}",
+        "Analysis": "Essa fórmula calcula o faturamento acumulado das impressoras, considerando apenas as vendas iguais ou superiores ao faturamento atual, em relação aos produtos. Ou seja, representa o total de receita"
+    },
+    {
+        "Measure": "Fat Acumulado %",
+        "Formula": "```  VAR _FaturamentoAtual = [Faturamento] VAR _FaturamentoTotal = CALCULATE( [Faturamento], ALLSELECTED(dProdutos[Produto]) ) VAR _Tabela = SUMMARIZE( ALLSELECTED(fVendas), dProdutos[Produto], \"@Faturamento\", [Faturamento] ) VAR _Acumulado = IF( [Faturamento] > 0, SUMX( FILTER(_Tabela,[@Faturamento] >= _FaturamentoAtual), [Faturamento] )) RETURN _Acumulado / _FaturamentoTotal ``` formatString: 0%;-0%;0% lineageTag: 1f5bca92-eab7-4d5d-b7d4-69963303cb97",
+        "Analysis": "\"Porcentagem de Faturamento Acumulado: representa o percentual do total de faturamento alcançado até determinado produto em uma lista de vendas, considerando apenas itens com faturamento positivo."
+    },
+    {
+        "Measure": "Classificação ABC Tabela",
+        "Formula": "IF(HASONEFILTER('Classificação'[Coluna 1]), IF(SELECTEDVALUE('Classificação'[Coluna 1]) = [Classificação ABC],1,0),1) formatString: 0 lineageTag: 74eac1a7-9384-4adc-90df-e4ffddcb174d",
+        "Analysis": "\"Essa fórmula verifica se há um filtro aplicado à coluna 'Coluna 1' da tabela 'Classificação'. Se houver, ela verificará se o valor selecionado é igual à classificação 'ABC'. Se for verdadeiro, o"
+    },
+    {
+        "Measure": "Qtd Produtos",
+        "Formula": "COUNTROWS(dProdutos) formatString: #,0 lineageTag: 40da09d6-eec2-4b60-95c8-917849a4eb37",
+        "Analysis": "\"COUNTROWS(dProdutos) é uma fórmula que conta o número total de produtos registrados em nossa base de dados, representando a quantidade de itens disponíveis para uso nas impressoras.\""
+    },
+    {
+        "Measure": "Qtde Produto A",
+        "Formula": "COUNTROWS( FILTER(VALUES(dProdutos[Produto]), [Classificação ABC] = \"A\")) formatString: #,0 lineageTag: 111ca817-249b-44ba-93b0-21f7e548f631",
+        "Analysis": "A fórmula conta o número de produtos com classificação \"A\" em uma lista de produtos. No contexto de uso de impressoras, isso representa o número de modelos de impressão mais populares ou rentáveis,"
+    },
+    {
+        "Measure": "Qtde Produto B",
+        "Formula": "COUNTROWS( FILTER(VALUES(dProdutos[Produto]), [Classificação ABC] = \"B\")) formatString: #,0 lineageTag: 94a788d5-ba3d-49bb-915d-5282d53a258b",
+        "Analysis": "\"A fórmula COUNTROWS( FILTER(VALUES(dProdutos[Produto]), [Classificação ABC] = \"B\")) conta o número de produtos classificados como \"B\" (segunda melhor classificação) no seu estoque de produtos para"
+    },
+    {
+        "Measure": "Qtde Produto C",
+        "Formula": "COUNTROWS( FILTER(VALUES(dProdutos[Produto]), [Classificação ABC] = \"C\")) formatString: #,0 lineageTag: e841c4cb-7c39-4cb5-8178-b78aa5fbe1ce",
+        "Analysis": "\"A fórmula calcula o número de produtos classificados como 'C' na classificação ABC. Isso representa a quantidade de produtos menos vendidos/menos críticos para a impressora, auxiliando na tomada de"
+    },
+    {
+        "Measure": "Faturamento Produto A",
+        "Formula": "CALCULATE( [Faturamento], FILTER(VALUES(dProdutos[Produto]), [Classificação ABC] = \"A\")) formatString: \"R$\"\\ #,0.00;-\"R$\"\\ #,0.00;\"R$\"\\ #,0.00 lineageTag: d38e36ce-9c9e-42c8-a341-57830fa52cc9  annotation PBI_FormatHint = {\"currencyCulture\":\"pt-BR\"}",
+        "Analysis": "Essa fórmula calcula o faturamento total dos produtos classificados como \"A\" no sistema de classificação ABC. Ela filtra os produtos com essa classificação e soma o faturamento correspondente. O"
+    },
+    {
+        "Measure": "Faturamento Produto B",
+        "Formula": "CALCULATE( [Faturamento], FILTER(VALUES(dProdutos[Produto]), [Classificação ABC] = \"B\")) formatString: \"R$\"\\ #,0.00;-\"R$\"\\ #,0.00;\"R$\"\\ #,0.00 lineageTag: f281794b-73fc-4037-99b8-cc794478045e  annotation PBI_FormatHint = {\"currencyCulture\":\"pt-BR\"}",
+        "Analysis": "\"O valor calculado representa o faturamento total de produtos classificados como 'B' (média demanda) no nosso portfólio. Isso nos ajuda a entender quanto estamos gerando de receita com esses produtos"
+    },
+    {
+        "Measure": "Faturamento Produto C",
+        "Formula": "CALCULATE( [Faturamento], FILTER(VALUES(dProdutos[Produto]), [Classificação ABC] = \"C\")) formatString: \"R$\"\\ #,0.00;-\"R$\"\\ #,0.00;\"R$\"\\ #,0.00 lineageTag: a18ed51b-6303-4b89-bb37-d705d745e5cc  annotation PBI_FormatHint = {\"currencyCulture\":\"pt-BR\"}",
+        "Analysis": "\"A fórmula calcula o faturamento total dos produtos classificados como 'C' no sistema de classificação ABC, que representa produtos com baixa demanda ou baixo valor. Em outras palavras, é o valor"
+    },
+    {
+        "Measure": "% Grupo A",
+        "Formula": "DIVIDE([Faturamento Produto A],[Faturamento]) formatString: 0.00%;-0.00%;0.00% lineageTag: 899d9de6-a5b6-463b-98ec-98a796817b34",
+        "Analysis": "\"Essa fórmula calcula a porcentagem do faturamento do Produto A em relação ao faturamento total. Representa a participação do Produto A nas vendas totais. Por exemplo, se o resultado for 30,00%,"
+    },
+    {
+        "Measure": "% Grupo B",
+        "Formula": "DIVIDE([Faturamento Produto B],[Faturamento]) formatString: 0.00%;-0.00%;0.00% lineageTag: 8225ca28-8c6e-45fa-b2f8-aa5467c9da05",
+        "Analysis": "\"A fórmula representa a porcentagem do faturamento do Produto B em relação ao faturamento total. Ou seja, indica qual parte do seu faturamento vem especificamente do Produto B, ajudando a entender a"
+    },
+    {
+        "Measure": "% Grupo C",
+        "Formula": "DIVIDE([Faturamento Produto C],[Faturamento]) formatString: 0.00%;-0.00%;0.00% lineageTag: d657db78-bd9e-435d-a274-4ae14c60f35f",
+        "Analysis": "Essa fórmula calcula a porcentagem do faturamento de um produto específico em relação ao faturamento total. Mostra quanto desse produto contribui para o total de vendas. Por exemplo, se o resultado"
+    },
+    {
+        "Measure": "Ticket Médio",
+        "Formula": "DIVIDE([Faturamento],[Unidades Vendidas]) formatString: \"R$\"\\ #,0.###############;-\"R$\"\\ #,0.###############;\"R$\"\\ #,0.############### lineageTag: 60684b22-9202-4447-b017-3b6bd9b67a7f  annotation PBI_FormatHint = {\"currencyCulture\":\"pt-BR\"}",
+        "Analysis": "\"Preço Médio por Unidade Vendida: representa o valor total do faturamento dividido pelo número de unidades vendidas, mostrando o preço médio pago por impressora.\""
+    },
+    {
+        "Measure": "Ticket Médio Grupo A",
+        "Formula": "CALCULATE( [Ticket Médio], FILTER(VALUES(dProdutos[Produto]), [Classificação ABC] = \"A\") ) formatString: \"R$\"\\ #,0.00;-\"R$\"\\ #,0.00;\"R$\"\\ #,0.00 lineageTag: c4f95f02-4fa1-4240-af67-1366501a2884  annotation PBI_FormatHint = {\"currencyCulture\":\"pt-BR\"}",
+        "Analysis": "\"Fórmula para calcular o valor médio dos tickets dos produtos de maior demanda (Classificação A). Essa fórmula filtra os produtos de geração de tickets com maior frequência de uso, calculando e"
+    },
+    {
+        "Measure": "Ticket Médio Grupo B",
+        "Formula": "CALCULATE( [Ticket Médio], FILTER(VALUES(dProdutos[Produto]), [Classificação ABC] = \"B\") ) formatString: \"R$\"\\ #,0.00;-\"R$\"\\ #,0.00;\"R$\"\\ #,0.00 lineageTag: 1d81f0ee-13ac-4f2b-9e26-78dfd2fa9e54  annotation PBI_FormatHint = {\"currencyCulture\":\"pt-BR\"}",
+        "Analysis": "\"Tique Médio - Classificação B: Valor médio dos tickets de produtos classificados como \"B\" (média demanda) em nossa base de dados. Representa o valor médio dos tickets de produtos que têm uma demanda"
+    },
+    {
+        "Measure": "Ticket Médio Grupo C",
+        "Formula": "CALCULATE( [Ticket Médio], FILTER(VALUES(dProdutos[Produto]), [Classificação ABC] = \"C\") ) formatString: \"R$\"\\ #,0.00;-\"R$\"\\ #,0.00;\"R$\"\\ #,0.00 lineageTag: bf5cfe35-513a-42be-ad66-3f83f137407f  annotation PBI_FormatHint = {\"currencyCulture\":\"pt-BR\"}",
+        "Analysis": "\"Ticket Médio de Produtos 'C': Mostra o valor médio gasto em filmes impressos com produtos classificados como 'C', ou seja, produtos menos vendidos. Ajuda a entender o potencial de economia com"
+    },
+    {
+        "Measure": "Faturamento Acumulado DAX",
+        "Formula": "CALCULATE( [Faturamento], DATESYTD(dCalendario[Data]) ) formatString: \"R$\"\\ #,0.###############;-\"R$\"\\ #,0.###############;\"R$\"\\ #,0.############### lineageTag: cee1816a-cdce-4f60-a27b-a703da726ca7  annotation PBI_FormatHint = {\"currencyCulture\":\"pt-BR\"}  partition Medidas-3a73fa63-5b8a-4611-8622-f613aa54e5c8 = m mode: import source = let Fonte = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText(\"i44FAA==\", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [#\"Coluna 1\" = _t]), #\"Tipo Alterado\" = Table.TransformColumnTypes(Fonte,{{\"Coluna 1\", type text}}), #\"Colunas Removidas\" = Table.RemoveColumns(#\"Tipo Alterado\",{\"Coluna 1\"}) in #\"Colunas Removidas\"  annotation PBI_ResultType = Table",
+        "Analysis": "Essa fórmula calcula o faturamento total do ano até a data atual. Ela soma todos os valores de faturamento desde o início do ano calendário até a data escolhida.\n\nExemplo: se você selecionar o mês de"
+    }
+]
