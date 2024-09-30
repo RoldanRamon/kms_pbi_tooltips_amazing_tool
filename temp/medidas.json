@@ -1,0 +1,7 @@
+[
+    {
+        "Measure": "teste",
+        "Formula": "var bananas = 2 var pera =2 RETURN bananas + pera formatString: 0 lineageTag: e0ca5b10-f026-4dd4-8ae1-f4415e960df5  column Value dataType: int64 isHidden formatString: 0 lineageTag: e1ce6c40-acac-4a2f-8dde-a307a8c453cd summarizeBy: sum isNameInferred isDataTypeInferred sourceColumn: [Value]  annotation SummarizationSetBy = Automatic  partition _Medidas = calculated mode: import source = {1}  annotation PBI_Id = 108c9446db3447669fc041fb4204182e",
+        "Analysis": "Essa medida calcula o total de itens somando as quantidades de bananas e peras. Representa a soma de dois valores específicos (2 bananas + 2 peras) e é exibida no gráfico 'Vendas do dia' do dashboard 'Impressoras do Além'."
+    }
+]

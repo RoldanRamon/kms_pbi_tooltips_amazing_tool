@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "Documentador de Power BI"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "f94b6c64-74d1-4cce-813d-5f65e9543678"
+  }
+}

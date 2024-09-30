@@ -1,0 +1,29 @@
+table _Medidas
+	lineageTag: 90abe7da-0b5c-4771-af0f-4bf14ddd3c04
+
+	measure teste =
+			
+			var bananas = 2
+			var pera =2
+			RETURN bananas + pera
+		formatString: 0
+		lineageTag: e0ca5b10-f026-4dd4-8ae1-f4415e960df5
+
+	column Value
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: e1ce6c40-acac-4a2f-8dde-a307a8c453cd
+		summarizeBy: sum
+		isNameInferred
+		isDataTypeInferred
+		sourceColumn: [Value]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition _Medidas = calculated
+		mode: import
+		source = {1}
+
+	annotation PBI_Id = 108c9446db3447669fc041fb4204182e
+

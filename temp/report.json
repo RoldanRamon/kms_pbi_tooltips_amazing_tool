@@ -1,0 +1,42 @@
+{
+    "config": "{\"version\":\"5.57\",\"themeCollection\":{\"baseTheme\":{\"name\":\"CY24SU08\",\"version\":\"5.58\",\"type\":2}},\"activeSectionIndex\":0,\"defaultDrillFilterOtherVisuals\":true,\"linguisticSchemaSyncVersion\":2,\"settings\":{\"useNewFilterPaneExperience\":true,\"allowChangeFilterTypes\":true,\"useStylableVisualContainerHeader\":true,\"queryLimitOption\":6,\"useEnhancedTooltips\":true,\"exportDataMode\":1,\"useDefaultAggregateDisplayName\":true},\"objects\":{\"section\":[{\"properties\":{\"verticalAlignment\":{\"expr\":{\"Literal\":{\"Value\":\"'Top'\"}}}}}]}}",
+    "layoutOptimization": 0,
+    "resourcePackages": [
+        {
+            "resourcePackage": {
+                "disabled": false,
+                "items": [
+                    {
+                        "name": "CY24SU08",
+                        "path": "BaseThemes/CY24SU08.json",
+                        "type": 202
+                    }
+                ],
+                "name": "SharedResources",
+                "type": 2
+            }
+        }
+    ],
+    "sections": [
+        {
+            "config": "{}",
+            "displayName": "Página 1",
+            "displayOption": 1,
+            "filters": "[]",
+            "height": 720.0,
+            "name": "dd2647f68f4cc04ed486",
+            "visualContainers": [
+                {
+                    "config": "{\"name\": \"28f222a8287571c79831\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 492.2459476309226, \"y\": 36.733167082294244, \"width\": 300, \"height\": 300, \"z\": 0}}], \"singleVisual\": {\"visualType\": \"barChart\", \"projections\": {\"Y\": [{\"queryRef\": \"_Medidas.teste\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"_\", \"Entity\": \"_Medidas\", \"Type\": 0}], \"Select\": [{\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"_\"}}, \"Property\": \"teste\"}, \"Name\": \"_Medidas.teste\", \"NativeReferenceName\": \"teste\"}], \"OrderBy\": [{\"Direction\": 2, \"Expression\": {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"_\"}}, \"Property\": \"teste\"}}}]}, \"drillFilterOtherVisuals\": true, \"hasDefaultSort\": true, \"vcObjects\": {\"title\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Vendas do dia'\"}}}}}], \"visualHeaderTooltip\": [{\"properties\": {\"text\": {\"expr\": {\"Literal\": {\"Value\": \"'Essa medida calcula a soma de duas quantidades: bananas (2) e peras (2). O resultado \\u00e9 exibido como um valor total, mostrando a quantidade total de frutas. \\u00c9 usada no gr\\u00e1fico 'Vendas do dia' no dashboard 'Frutaria 123'.'\"}}}, \"themedTitleFontColor\": {\"solid\": {\"color\": {\"expr\": {\"ThemeDataColor\": {\"ColorId\": 0, \"Percent\": 0}}}}}, \"themedBackground\": {\"solid\": {\"color\": {\"expr\": {\"ThemeDataColor\": {\"ColorId\": 8, \"Percent\": 0}}}}}}}], \"visualHeader\": [{\"properties\": {\"showTooltipButton\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+                    "filters": "[]",
+                    "height": 300.0,
+                    "width": 300.0,
+                    "x": 492.25,
+                    "y": 36.73,
+                    "z": 0.0
+                }
+            ],
+            "width": 1280.0
+        }
+    ]
+}

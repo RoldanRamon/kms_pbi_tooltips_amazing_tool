@@ -29,8 +29,8 @@ def sidebar_inputs():
     with st.sidebar:
         st.image("ToolTipsTools.png")   
         
-        # Opção de seleção do modelos disponíveis no GROQ
-        modelo = st.selectbox("Choice your model:", (
+        # Opção de seleção dos modelos disponíveis no GROQ
+        modelo = st.selectbox("Escolha o modelo:", (
             'llama-3.1-70b-versatile',
             'gemma-7b-it',
             'distil-whisper-large-v3-en',
@@ -46,14 +46,17 @@ def sidebar_inputs():
             'whisper-large-v3'
         ))
         
-        st.write('Load the file report.json')
+        # Campo de entrada para o nome do dashboard
+        dashboard_name = st.text_input("Digite o nome do dashboard:", value="", max_chars=100)
+        
+        st.write('Carregar o arquivo report.json')
         report_json_uploaded = st.file_uploader("Carregar report.json", type=['json'], key='report_json_uploader')
         if report_json_uploaded:
             report_json_path = save_uploaded_file(report_json_uploaded, 'report.json')
         else:
             report_json_path = ''
         
-        st.write('Load the file _Medidas.tmdl')
+        st.write('Carregar o arquivo _Medidas.tmdl')
         medidas_tmdl_uploaded = st.file_uploader("Carregar _Medidas.tmdl", type=['tmdl'], key='medidas_tmdl_uploader')
         if medidas_tmdl_uploaded:
             medidas_tmdl_path = save_uploaded_file(medidas_tmdl_uploaded, '_Medidas.tmdl')
@@ -61,9 +64,9 @@ def sidebar_inputs():
             medidas_tmdl_path = ''
         
         ""
-        "Developed by [Ramon Roldan de Lara](https://www.linkedin.com/in/ramon-roldan-de-lara/)"
+        "Desenvolvido por [Ramon Roldan de Lara](https://www.linkedin.com/in/ramon-roldan-de-lara/)"
     
-    return report_json_path, medidas_tmdl_path, modelo
+    return report_json_path, medidas_tmdl_path, modelo, dashboard_name
 
 def save_uploaded_file(uploadedfile, filename):
     """Salva o arquivo enviado em uma pasta temporária e retorna o caminho."""
@@ -80,12 +83,13 @@ def main():
     configure_app()
     global MODELO
 
-    report_json_path, medidas_tmdl_path, modelo = sidebar_inputs()
+    report_json_path, medidas_tmdl_path, modelo, dashboard_name = sidebar_inputs()
     MODELO = modelo
 
-    if report_json_path and medidas_tmdl_path:
+    if report_json_path and medidas_tmdl_path and dashboard_name:
         st.write(f"Arquivo report.json carregado em: {report_json_path}")
         st.write(f"Arquivo _Medidas.tmdl carregado em: {medidas_tmdl_path}")
+        st.write(f"Nome do Dashboard: {dashboard_name}")
 
         # Botão para iniciar o processamento
         if st.button('Iniciar processamento'):
@@ -95,7 +99,7 @@ def main():
                 if process_status:
                     st.success('Medidas processadas com sucesso.')
 
-                    analyze_status = run_analyze_measures(os.path.dirname(medidas_tmdl_path), MODELO)
+                    analyze_status = run_analyze_measures(os.path.dirname(medidas_tmdl_path), MODELO, report_json_path, dashboard_name)
                     if analyze_status:
                         st.success('Análise das medidas concluída com sucesso.')
 
@@ -116,7 +120,7 @@ def main():
                 else:
                     st.error('Erro ao processar as medidas.')
     else:
-        st.info('Por favor, carregue os arquivos report.json e _Medidas.tmdl.')
+        st.info('Por favor, preencha o nome do dashboard e carregue os arquivos report.json e _Medidas.tmdl.')
 
 def run_process_measures(medidas_tmdl_path):
     """Executa o script process_measures.py com o caminho do _Medidas.tmdl."""
@@ -127,10 +131,10 @@ def run_process_measures(medidas_tmdl_path):
         st.error(f"Erro ao executar process_measures.py: {e}")
         return False
 
-def run_analyze_measures(medidas_folder_path, modelo):
-    """Executa o script analyze_measures.py com o caminho da pasta das medidas e o modelo selecionado."""
+def run_analyze_measures(medidas_folder_path, modelo, report_json_path, dashboard_name):
+    """Executa o script analyze_measures.py com o caminho da pasta das medidas, o modelo selecionado, o caminho do report.json e o nome do dashboard."""
     try:
-        subprocess.run(['python', 'analyze_measures.py', medidas_folder_path, modelo], check=True)
+        subprocess.run(['python', 'analyze_measures.py', medidas_folder_path, modelo, report_json_path, dashboard_name], check=True)
         return True
     except subprocess.CalledProcessError as e:
         st.error(f"Erro ao executar analyze_measures.py: {e}")
