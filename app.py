@@ -27,7 +27,7 @@ def configure_app():
 def sidebar_inputs():
     """Exibe o menu lateral para inserção das informações e seleção dos arquivos."""
     with st.sidebar:
-        st.image("https://lawrence.eti.br/wp-content/uploads/2024/06/AutoDoc.png")   
+        st.image("ToolTipsTools.png")   
         
         # Opção de seleção do modelos disponíveis no GROQ
         modelo = st.selectbox("Choice your model:", (

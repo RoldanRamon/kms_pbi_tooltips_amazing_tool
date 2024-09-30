@@ -54,7 +54,7 @@ To use the Tooltips Amazing Tool, you'll need the following:
 
 Here is a sample dashboard that shows the enhanced tooltips in action:
 
-![Tooltip Example](./image.png)
+![Tooltip Example](Exemplo.png)
 
 ## 🎨 Credits
 
