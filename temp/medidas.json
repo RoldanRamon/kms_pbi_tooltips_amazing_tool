@@ -1,7 +1,237 @@
 [
     {
-        "Measure": "teste",
-        "Formula": "var bananas = 2 var pera =2 RETURN bananas + pera formatString: 0 lineageTag: e0ca5b10-f026-4dd4-8ae1-f4415e960df5  column Value dataType: int64 isHidden formatString: 0 lineageTag: e1ce6c40-acac-4a2f-8dde-a307a8c453cd summarizeBy: sum isNameInferred isDataTypeInferred sourceColumn: [Value]  annotation SummarizationSetBy = Automatic  partition _Medidas = calculated mode: import source = {1}  annotation PBI_Id = 108c9446db3447669fc041fb4204182e",
-        "Analysis": "Essa medida calcula o total de itens somando as quantidades de bananas e peras. Representa a soma de dois valores específicos (2 bananas + 2 peras) e é exibida no gráfico 'Vendas do dia' do dashboard 'Impressoras do Além'."
+        "Measure": "Horas OM",
+        "Formula": "VAR vHorasDecimal = SUM ( fApontamentoManut[Total Hora Decimal] ) VAR vHoras = INT ( vHorasDecimal ) VAR vMinutosDecimal = 60 * ( vHorasDecimal - vHoras ) VAR vMinutos = INT ( vMinutosDecimal ) VAR vSegundos = ROUND ( 60 * ( vMinutosDecimal - vMinutos ), 0 ) VAR vHH = FORMAT ( vHoras, \"00\" ) VAR vMM = FORMAT ( vMinutos, \"00\" ) VAR vSS = FORMAT ( vSegundos, \"00\" ) RETURN IF ( CONVERT ( vHH & vMM & vSS, STRING ) = BLANK (), CONVERT ( vHH & vMM & vSS, STRING ), FORMAT ( CONVERT ( vHH & vMM & vSS, INTEGER ), \"00:00:00\" ) ) lineageTag: 795063cf-ba0b-4c05-ba34-06be777b6a54",
+        "Analysis": "Essa fórmula está calculando a duração total de um serviço de assistência técnica da sua ordem de serviço de forma mais organizada, como horas, minutos e segundos. \n\n**Em resumo:** Ela pega a quantidade total de horas trabalhadas (em formato"
+    },
+    {
+        "Measure": "xDias OM",
+        "Formula": "SUMX ( fApontamentoManut, fApontamentoManut[Total Hora Decimal] ) / 24 lineageTag: 37f36a95-382f-48f2-a88e-1ed6b3465ba8  annotation PBI_FormatHint = {\"isGeneralNumber\":true}",
+        "Analysis": "Este indicador mostra a quantidade total de tempo dedicado em ordens de serviço de assistência técnica, medido em **dias completos**.\n\nEle calcula a soma de todas as horas decimal registradas em cada ordem de serviço (\"fApontamentoManut[Total Hora"
+    },
+    {
+        "Measure": "Tempo Médio OM",
+        "Formula": "VAR vHorasDecimal = SUM ( fApontamentoManut[Total Hora Decimal] ) / COUNTROWS ( fApontamentoManut ) VAR vHoras = INT ( vHorasDecimal ) VAR vMinutosDecimal = 60 * ( vHorasDecimal - vHoras ) VAR vMinutos = INT ( vMinutosDecimal ) VAR vSegundos = ROUND ( 60 * ( vMinutosDecimal - vMinutos ), 0 ) VAR vHH = FORMAT ( vHoras, \"00\" ) VAR vMM = FORMAT ( vMinutos, \"00\" ) VAR vSS = FORMAT ( vSegundos, \"00\" ) RETURN IF ( CONVERT ( vHH & vMM & vSS, STRING ) = BLANK (), CONVERT ( vHH & vMM & vSS, STRING ), FORMAT ( CONVERT ( vHH & vMM & vSS, INTEGER ), \"00:00:00\" ) ) lineageTag: 5313a87b-d39e-4b94-978b-dcede087c5b7",
+        "Analysis": "Essa fórmula está calculando o **tempo médio gasto em ordens de serviço** por técnico? \n\nVamos entender como funciona passo a passo:\n\n1. **Primeiro, ela soma todas as horas trabalhadas em cada ordem de serviço e divide pelo número total de ordens.**"
+    },
+    {
+        "Measure": "Faturamento",
+        "Formula": "```  CALCULATE( SUMX(fVenda,fVenda[VALOR_LIQUIDO]), CROSSFILTER(fVenda[DIM_CLIENTE_ID], dEmitente[DIM_EMITENTE_ID], Both))  ``` formatString: \"R$\"\\ #,0;-\"R$\"\\ #,0;\"R$\"\\ #,0 lineageTag: bf99bdc6-30be-4900-90d5-dbf5e8c78a74  changedProperty = FormatString  annotation PBI_FormatHint = {\"currencyCulture\":\"pt-BR\"}",
+        "Analysis": "Essa fórmula calcula o **valor total em reais das ordens de serviço de assistência técnica**. \n\nImagine que cada linha na planilha \"fVenda\" representa uma ordem de serviço, e a coluna \"VALOR_LIQUIDO\" mostra quanto cada serviço custou. \n\nA fórmula"
+    },
+    {
+        "Measure": "Qtd OM",
+        "Formula": "DISTINCTCOUNT(fOrdemManutencao[nr-ord-produ]) formatString: #,0 lineageTag: e4210a55-6c9a-4a5b-902e-fe5e44a0dd71",
+        "Analysis": "A medida \"Quantidade OM\" no visual \"Quantidade OM, Service Rating, OS by Month\" está contando o número **único** de ordens de serviço (OS)  registradas em cada mês. \n\nImagine que cada ordem de serviço é um item único em uma lista. Essa medida pega"
+    },
+    {
+        "Measure": "Km total",
+        "Formula": "SUMX(fApontamentoManut, fApontamentoManut[km-final] - fApontamentoManut[km-inicial]) lineageTag: bd9b6a9f-b3c5-4bdf-bb80-ef73cc501407  annotation PBI_FormatHint = {\"isGeneralNumber\":true}",
+        "Analysis": "##  Compreendendo o \"Diferença de Quilometragem\" no Dashboard \"Apontamento de Ordens de Assistência Técnica\" \n\nEssa medida, exibida no seu gráfico, mostra a **totalidade da distância percorrida** por todos os veículos em suas manutenções.  \n\nImagine"
+    },
+    {
+        "Measure": "Qtde Técnicos",
+        "Formula": "DISTINCTCOUNT(dTecnicos[Matr.]) formatString: 0 lineageTag: 4a79e874-7bea-4a91-bb70-b8a8c40854f9",
+        "Analysis": "Essa medida no dashboard \"Apontamento de ordens de serviço de assistência técnica\" calcula o **número único de técnicos** que realizaram serviços nesse período.  \n\nÉ como se fosse uma lista dos técnicos que trabalharam e, em vez de contar cada vez"
+    },
+    {
+        "Measure": "Horas Técnicos",
+        "Formula": "VAR vHorasDecimal = SUM ( dCalendario[Horas Técnicos]) VAR vHoras = INT ( vHorasDecimal ) VAR vMinutosDecimal = 60 * ( vHorasDecimal - vHoras ) VAR vMinutos = INT ( vMinutosDecimal ) VAR vSegundos = ROUND ( 60 * ( vMinutosDecimal - vMinutos ), 0 ) VAR vHH = FORMAT ( vHoras, \"00\" ) VAR vMM = FORMAT ( vMinutos, \"00\" ) VAR vSS = FORMAT ( vSegundos, \"00\" ) RETURN IF ( CONVERT ( vHH & vMM & vSS, STRING ) = BLANK (), CONVERT ( vHH & vMM & vSS, STRING ), FORMAT ( CONVERT ( vHH & vMM & vSS, INTEGER ), \"00:00:00\" ) ) lineageTag: f6306433-a9e9-4cae-8e46-a17b922608eb",
+        "Analysis": "Essa fórmula está calculando o tempo total gasto em ordens de serviço de assistência técnica, expresso em horas, minutos e segundos. \n\nImagine que você tem um registro de todas as horas que os técnicos dedicaram a cada serviço. Essa fórmula vai"
+    },
+    {
+        "Measure": "Horas Uteis Mes",
+        "Formula": "CALCULATE( DISTINCTCOUNT(dCalendario[Date]) * 8.4, dCalendario[Dia Util] = 1 && dCalendario[Feriados] = BLANK()) lineageTag: 375c4a4d-0fb0-48aa-a2b3-7cedf5377d4e  annotation PBI_FormatHint = {\"isGeneralNumber\":true}",
+        "Analysis": "Esta medida calcula o número total de dias úteis em que as ordens de serviço de assistência técnica foram realizadas, excluindo feriados. \n\n**Em termos simples:** Imagine que cada dia de trabalho em que uma ordem de serviço foi feita vale 8,4"
+    },
+    {
+        "Measure": "Horas Extra Técnico",
+        "Formula": "IF( [Horas Técnicos Decimal] - [Horas Uteis Mes]  > 0, [Horas Técnicos Decimal] - [Horas Uteis Mes] , 0) lineageTag: ece4a2ad-ad75-4c87-a0f2-5149017264be  annotation PBI_FormatHint = {\"isGeneralNumber\":true}",
+        "Analysis": "A medida que você está vendo no visual \"OVERTIME\" da página \"Técnicos\" no dashboard \"Apontamento de ordens de serviço de assistência técnica\" calcula o número de horas extras trabalhadas pelos técnicos. \n\nEm resumo, ela faz uma comparação:\n\n* Se as"
+    },
+    {
+        "Measure": "Horas Técnicos Decimal",
+        "Formula": "SUMX(fApontamentoManut,fApontamentoManut[Total Hora Decimal]) formatString: #,0.00 lineageTag: bdfc811e-29f0-4b5e-ab1e-90300d094451",
+        "Analysis": "Essa fórmula está calculando a média do tempo gasto em ordens de serviço de assistência técnica. \n\nEla analisa cada linha da tabela \"fApontamentoManut\" (que provavelmente lista todas as ordens de serviço) e soma o valor da coluna \"Total Hora"
+    },
+    {
+        "Measure": "Horas Técnicos Internal",
+        "Formula": "CALCULATE( SUMX(fApontamentoManut,fApontamentoManut[Total Hora Decimal]), fApontamentoManut[cc-codigo] = \"27002\") lineageTag: 7ea39909-9536-4258-b9d8-459cfe4b171d  annotation PBI_FormatHint = {\"isGeneralNumber\":true}",
+        "Analysis": "Essa medida calcula a **soma total de horas trabalhadas por técnicos em ordens de serviço de assistência técnica para o tipo de chamado \"27002\"**. \n\nImagine um gráfico que mostra a quantidade de horas trabalhadas por cada técnico. Essa medida ajuda"
+    },
+    {
+        "Measure": "Horas a Menos Técnico",
+        "Formula": "var uteis = [Horas Uteis Mes] RETURN uteis - [Horas Técnicos Decimal] lineageTag: 2e61e8b8-04f8-48e9-bf70-9bdad25796c7  annotation PBI_FormatHint = {\"isGeneralNumber\":true}",
+        "Analysis": "##  Explicação Simplificada:\n\nEssa medida calcula a **diferença entre as horas úteis de um mês e as horas trabalhadas pelos técnicos**.  \n\nImaginemos um mês com **20 dias úteis**, isso seria equivalente à medida \"[Horas Uteis Mes]\". A medida \"[Horas"
+    },
+    {
+        "Measure": "Horas Técnicos Ineficiencia",
+        "Formula": "CALCULATE( [Horas Técnicos Decimal], fOrdemManutencao[cod-tipo] = \"IN\") lineageTag: 60a81f43-30c3-4385-aa9f-dbd02b269c30  annotation PBI_FormatHint = {\"isGeneralNumber\":true}",
+        "Analysis": "Este cálculo está mostrando o número total de horas trabalhadas pelos técnicos em ordens de serviço de assistência técnica que foram classificadas como \"IN\" (acredito que seja um código para indicar o tipo de serviço).  \n\nImagine que você tem uma"
+    },
+    {
+        "Measure": "Qtde OM Mês Anterior",
+        "Formula": "CALCULATE( [Qtd OM] , DATEADD(dCalendario[Date],-1,MONTH)) formatString: 0 lineageTag: fa9e95d6-b11c-4dcd-8228-febce782c3ed",
+        "Analysis": "Essa medida mostra a quantidade de ordens de serviço (OM) de assistência técnica registradas **no mês anterior** ao mês atual.  \n\nImagine o dashboard como um relatório do mês, e ele quer te dizer quantos serviços de assistência técnica foram feitos"
+    },
+    {
+        "Measure": "% OM Mes Anterior",
+        "Formula": "DIVIDE( [Qtd OM] - [Qtde OM Mês Anterior], [Qtde OM Mês Anterior] , 0) formatString: 0.00%;-0.00%;0.00% lineageTag: f6646d5a-9a9a-4f85-aa19-b43db05d628d",
+        "Analysis": "Essa medida mostra a **variação percentual** no número de ordens de serviço de assistência técnica em comparação com o mês anterior. \n\n**Explicando a fórmula:**\n\n* **DIVIDE([Qtd OM] - [Qtde OM Mês Anterior], [Qtde OM Mês Anterior], 0):** Essa"
+    },
+    {
+        "Measure": "Horas Uteis Mes Total",
+        "Formula": "CALCULATE( (DISTINCTCOUNT(dCalendario[Date]) * 8.67) * [Qtde Técnicos], dCalendario[Dia Util] = 1 && dCalendario[Feriados] = BLANK()) lineageTag: 71621d43-3f2d-44c5-adcf-0557e256301c  annotation PBI_FormatHint = {\"isGeneralNumber\":true}",
+        "Analysis": "## Entendendo a Fórmula do Dashboard\n\nEssa fórmula está calculando o **tempo médio gasto por técnico** para concluir uma ordem de serviço de assistência técnica. \n\nImagine que cada dia útil tem 8,67 horas, pois considera as médias de duração dos"
+    },
+    {
+        "Measure": "Horas Uteis Mes Atual - Horas Técnicos",
+        "Formula": "[Horas Uteis Mes Total] - [Horas Técnicos Decimal] lineageTag: e92daffa-f73a-487d-ba2f-a40094230fc9  annotation PBI_FormatHint = {\"isGeneralNumber\":true}",
+        "Analysis": "Esta métrica, **Tempo médio OM**, mostra o tempo médio que leva para finalizar uma ordem de serviço de assistência técnica. \n\nA fórmula usada para calculá-la é simples: \n\n* **Começa com o total de horas úteis no mês**, que é o tempo que a equipe de"
+    },
+    {
+        "Measure": "Horas Técnicos Decimal Sem Extra",
+        "Formula": "SUMX(fApontamentoManut,fApontamentoManut[Total Hora Decimal]) - [Horas Extra Técnico] lineageTag: d48eee6f-b3c2-4b91-a407-93ad61200d54  annotation PBI_FormatHint = {\"isGeneralNumber\":true}",
+        "Analysis": "Essa medida, \"Hours Worked By Technician\" (Horas Trabalhadas pelo Técnico),  mostra a quantidade total de horas trabalhadas por cada técnico em ordens de serviço de assistência técnica. \n\nFuncionando assim:\n\n1. **SUMX(fApontamentoManut,"
+    },
+    {
+        "Measure": "Horas Técnicos Decimal Sem Extra Total",
+        "Formula": "(SUMX(fApontamentoManut,fApontamentoManut[Total Hora Decimal]) - [Horas Extra Técnico]) * [Qtde Técnicos] lineageTag: 9757a3b7-6c22-4181-b89e-afc22a4b1a94  annotation PBI_FormatHint = {\"isGeneralNumber\":true}",
+        "Analysis": "Este cálculo **\"Horas Trabalhadas por Técnico\"** está na página \"Técnicos\" do dashboard \"Apontamento de Ordens de Serviço de Assistência Técnica\".  \n\nImagine que cada técnico anota quantas horas ele trabalha em cada ordem de serviço. \n\n*"
+    },
+    {
+        "Measure": "Qtde de Notas",
+        "Formula": "DISTINCTCOUNT(fVenda[NOTA]) formatString: 0 lineageTag: 442e2e1d-e175-4fe6-ad7d-9fe8725cc44c",
+        "Analysis": "No dashboard \"Apontamento de ordens de serviço de assistência técnica\", o gráfico \"Total Faturado\" na página \"Metas, Sales\" mostra o número único de ordens de serviços emitidas.\n\nImaginemos que cada ordem de serviço é como uma nota fiscal para um"
+    },
+    {
+        "Measure": "Valor Apontamento",
+        "Formula": "SUMX(fApontamentoManut,fApontamentoManut[vl-tot-custo]) formatString: \"R$\"\\ #,0.0;-\"R$\"\\ #,0.0;\"R$\"\\ #,0.0 lineageTag: e57a4edb-b167-4f8e-aa9b-ebb56b2bff4a  annotation PBI_FormatHint = {\"currencyCulture\":\"pt-BR\"}",
+        "Analysis": "Essa medida calcula o **total custo total das ordens de serviço de assistência técnica**.  \n\nEla analisa cada linha da tabela \"fApontamentoManut\" (que provavelmente contém informações sobre cada ordem de serviço) e soma o valor da coluna"
+    },
+    {
+        "Measure": "Ticket Médio",
+        "Formula": "DIVIDE([Faturamento], [Qtde de Notas], 0 ) formatString: \"R$\"\\ #,0;-\"R$\"\\ #,0;\"R$\"\\ #,0 lineageTag: ed6eb9fd-622f-4c22-a12c-7d28dcbe85eb  annotation PBI_FormatHint = {\"currencyCulture\":\"pt-BR\"}",
+        "Analysis": "Essa medida calcula o **faturamento médio por nota de serviço**.  \n\nEla divide o total **faturamento ([Faturamento])**  pelo número total de **notas de serviço ([Qtde de Notas])**.  \n\nA fórmula usa `DIVIDE` para garantir que, caso não haja notas de"
+    },
+    {
+        "Measure": "Qtde Clientes",
+        "Formula": "DISTINCTCOUNT(fVenda[DIM_CLIENTE_ID]) formatString: 0 lineageTag: 2c360e1c-d8cd-4182-9105-d389d6f84adf",
+        "Analysis": "A métrica \"DISTINCTCOUNT(fVenda[DIM_CLIENTE_ID])\" no gráfico \"Total Faturado\" da página \"Metas\"  mostra o número **único** de clientes que tiveram ordens de serviço de assistência técnica neste período.  \n\nImagine que você tem uma lista de todos os"
+    },
+    {
+        "Measure": "Qtde Técnicos Mês",
+        "Formula": "DISTINCTCOUNT(fApontamentoManut[cod-matr]) formatString: 0 lineageTag: 591cee30-9fe0-44c6-9885-0b411eb425c9",
+        "Analysis": "Essa medida calcula **o número único de técnicos que realizaram os apontamentos de ordem de serviço de assistência técnica**. \n\nImagine que cada linha do seu gráfico representa uma ordem de serviço. A fórmula"
+    },
+    {
+        "Measure": "Meta",
+        "Formula": "SUMX(dMetas, dMetas[valor]) formatString: \"R$\"\\ #,0;-\"R$\"\\ #,0;\"R$\"\\ #,0 lineageTag: ec0e1369-05c0-455a-9e00-9bf99101309e  annotation PBI_FormatHint = {\"currencyCulture\":\"pt-BR\"}",
+        "Analysis": "Essa medida no dashboard \"Apontamento de ordens de serviço de assistência técnica\" calcula o **total faturado** em todas as metas. \n\nImaginem que cada linha da tabela de metas representa uma meta específica de faturamento. A fórmula `SUMX(dMetas,"
+    },
+    {
+        "Measure": "% Meta",
+        "Formula": "DIVIDE( [Faturamento] , [Meta] ,  0 ) formatString: 0.00%;-0.00%;0.00% lineageTag: 5af37a8f-9078-404c-b978-facfa085e367",
+        "Analysis": "Esta medida calcula a porcentagem que o faturamento atingiu em relação à meta. \n\nImaginemos que a meta de faturamento para a assistência técnica é de R$ 10.000,00 e o valor faturado foi de R$ 8.000,00. \n\nA fórmula \"DIVIDE([Faturamento], [Meta], 0)\""
+    },
+    {
+        "Measure": "Dias Uteis Meta Atual",
+        "Formula": "CALCULATE( SUMX( dCalendario, dCalendario[Dia Util] ), DATESBETWEEN(dCalendario[Data Assistencia (compartimentos)],STARTOFMONTH(dCalendario[Data Assistencia (compartimentos)]),TODAY()-2)) formatString: 0 lineageTag: 94bc9cc9-75fc-40f4-8228-5e485e9f178d",
+        "Analysis": "Essa medida calcula **o total de dias úteis em que houve ordens de serviço de assistência técnica no mês atual**.  \n\nEm outras palavras, ela conta quantos dias úteis passaram nesse mês em que alguém solicitou uma assistência técnica. \n\n\nPara fazer"
+    },
+    {
+        "Measure": "Meta Projetada",
+        "Formula": "Var DiasRealizados = DIVIDE( [Meta] , SUMX(dCalendario, dCalendario[Dia Util]) , 0) return DiasRealizados*[Dias Uteis Meta Atual] formatString: \"R$\"\\ #,0;-\"R$\"\\ #,0;\"R$\"\\ #,0 lineageTag: 7834aa71-b633-4af6-9d52-d4a3cc6dac36  annotation PBI_FormatHint = {\"currencyCulture\":\"pt-BR\"}",
+        "Analysis": "A medida \"Var DiasRealizados\" calcula quantos dias úteis, em média, são realizados para completar as metas de ordens de serviço de assistência técnica. \n\n**Para entender melhor, pense assim:**\n\nVocê tem uma meta de realizar, por exemplo, 10 serviços"
+    },
+    {
+        "Measure": "Dif Meta Projetada Serviços",
+        "Formula": "[Faturamento] - [Meta Projetada] formatString: \"R$\"\\ #,0;-\"R$\"\\ #,0;\"R$\"\\ #,0 lineageTag: d7723c5b-5638-48ef-a7b3-937f59d37020  annotation PBI_FormatHint = {\"currencyCulture\":\"pt-BR\"}",
+        "Analysis": "Essa medida mostra a diferença entre o valor total que a empresa **gerou em faturamento** com suas ordens de serviço de assistência técnica e o **valor que ela esperava arrecadar (a meta projetada)**.  \n\nEm resumo, ela te diz se a empresa **superou"
+    },
+    {
+        "Measure": "Faturamento LY",
+        "Formula": "var UltDtVenda = CALCULATE( LASTDATE(fVenda[DT_EMIS]), ALL(fVenda) ) var DataLimite = EDATE(UltDtVenda,-12) return CALCULATE([Faturamento], SAMEPERIODLASTYEAR(dCalendario[Date]), FILTER(ALL(dCalendario), dCalendario[Date] <= DataLimite) ) formatString: \"R$\"\\ #,0.00;-\"R$\"\\ #,0.00;\"R$\"\\ #,0.00 lineageTag: ce59771d-ae37-4531-8075-3db93a483859  annotation PBI_FormatHint = {\"currencyCulture\":\"pt-BR\"}",
+        "Analysis": "Essa medida calcula o **faturamento do último ano**, comparado com o mesmo período do ano anterior. \n\nVeja como funciona:\n\n1. **Encontrar a última venda:** A medida primeiro busca a data da última venda registrada.\n2. **Definir um limite de tempo:**"
+    },
+    {
+        "Measure": "Faturamento LM",
+        "Formula": "var UltDtVenda = CALCULATE( LASTDATE(fVenda[DT_EMIS]), ALL(fVenda) ) var DataLimite = EDATE(UltDtVenda,-1) return CALCULATE([Faturamento], SAMEPERIODLASTYEAR(dCalendario[Date]), FILTER(ALL(dCalendario), dCalendario[Date] <= DataLimite) ) formatString: \"R$\"\\ #,0.00;-\"R$\"\\ #,0.00;\"R$\"\\ #,0.00 lineageTag: 79bde43a-8d6a-4547-af0c-4743f83785cd  annotation PBI_FormatHint = {\"currencyCulture\":\"pt-BR\"}",
+        "Analysis": "Essa fórmula está calculando o **faturamento do ano anterior** para o mesmo período que estamos analisando no dashboard.\n\n**Veja como funciona:**\n\n1. **`var UltDtVenda = CALCULATE( LASTDATE(fVenda[DT_EMIS]), ALL(fVenda) )`**:\n   - Essa parte "
+    },
+    {
+        "Measure": "% Faturamento LY",
+        "Formula": "DIVIDE( [Faturamento] , [Faturamento LY] , 0 ) formatString: 0.00%;-0.00%;0.00% lineageTag: 220a0d22-2f08-42e3-a6e9-58bcf8e28c3c",
+        "Analysis": "Essa medida mostra a variação de faturamento em relação ao mesmo período do ano anterior (ano anterior - \"LY\"). \n\nImagine que o dashboard está te contando como o seu negócio de assistência técnica está crescendo ou diminuindo em relação ao ano"
+    },
+    {
+        "Measure": "% Faturamento LM",
+        "Formula": "DIVIDE( [Faturamento] , [Faturamento LM] , 0 ) formatString: 0.00%;-0.00%;0.00% lineageTag: 6e238951-c5a3-4106-86e7-bb47917aee46",
+        "Analysis": "Essa medida mostra a **variância** do faturamento das ordens de serviço de assistência técnica em relação a um faturamento \"esperado\" (Faturamento LM).  \n\nÉ como se fosse uma comparação: você tirou o que arrecadou de forma real (Faturamento) e"
+    },
+    {
+        "Measure": "Auxiliar Meta",
+        "Formula": "1 - ([% Meta] + [Auxiliar Meta Prevista]) formatString: 0.00%;-0.00%;0.00% lineageTag: 1c431244-9737-4667-b0b2-fc4eca29e5ec",
+        "Analysis": "A medida \"1 - ([% Meta] + [Auxiliar Meta Prevista])\"  descreve o  **nível de execução da meta de ordens de serviço** no dashboard \"Apontamento de ordens de serviço de assistência técnica\".\n\nImagine que a meta é completar 100 peças de trabalho. Essa"
+    },
+    {
+        "Measure": "Dias Uteis Realizados",
+        "Formula": "CALCULATE( [Dias Uteis Meta Atual], dCalendario[MesAnoAssistenciaHoje] = \"Mês Corrente\") formatString: 0 lineageTag: 2d93db18-98b6-4c53-8f67-829c17b1d506",
+        "Analysis": "Essa medida calcula quantos dias úteis até a meta **atual**  foram utilizados em **assistência técnica neste mÊs**. \n\nPara fazer isso, ela olha para a data de hoje do mês atual (`MesAnoAssistenciaHoje`) e compara com a meta estabelecida para o mês"
+    },
+    {
+        "Measure": "Meta Prevista",
+        "Formula": "var vMetaPrevista = DIVIDE([Meta], [Dias Uteis Meta Atual],0)  return vMetaPrevista * [Dias Uteis Realizados] formatString: \"R$\"\\ #,0.00;-\"R$\"\\ #,0.00;\"R$\"\\ #,0.00 lineageTag: 77d4b5f3-c3af-401d-a76b-51fff938a78f  annotation PBI_FormatHint = {\"currencyCulture\":\"pt-BR\"}",
+        "Analysis": "Essa medida calcula quanto você deveria ter realizado de ordens de serviço, considerando a meta estabelecida e os dias úteis disponíveis. \n\n**Simplificando:**\n\nImaginemos que sua meta é atender 100 ordens de serviço em um mês, e este mês tem 20 dias"
+    },
+    {
+        "Measure": "% Meta Prevista",
+        "Formula": "DIVIDE( [Meta Prevista] , [Meta] , 0 ) formatString: 0.00%;-0.00%;0.00% lineageTag: 99d21306-9e4f-4758-8231-38f19f0182ee",
+        "Analysis": "Essa medida calcula a porcentagem entre a \"Meta Prevista\" e a \"Meta\" para as ordens de serviço de assistência técnica.  \n\n**Imaginemos que a \"Meta\" seja 100 e a \"Meta Prevista\" seja 80**. \n\nA fórmula dividiría 80 por 100 e resultaria em 0,80."
+    },
+    {
+        "Measure": "Auxiliar Meta Prevista",
+        "Formula": "``` [% Meta Prevista] - [% Meta] ``` formatString: 0.00%;-0.00%;0.00% lineageTag: af579125-cc1f-40d1-a694-08063d21eedd",
+        "Analysis": "Essa medida calcula a diferença entre a meta prevista para as ordens de serviço de assistência técnica e a meta realmente atingida. \n\n**Explicando de forma simples:**\n\nImagine que a meta inicialmente era realizar 100 ordens de serviço. No dashboard,"
+    },
+    {
+        "Measure": "xTitulo Faturamento Meta",
+        "Formula": "\"Sales by \" & SWITCH( TRUE(), SELECTEDVALUE('ParâmetroFaturamentoMeta'[Parâmetro Pedido]) = 0 , \"Customers\", SELECTEDVALUE('ParâmetroFaturamentoMeta'[Parâmetro Pedido]) = 1 , \"Technician\", SELECTEDVALUE('ParâmetroFaturamentoMeta'[Parâmetro Pedido]) = 2 , \"OS\", \"\") lineageTag: 1ff1b482-78d3-413e-a64d-6ecaca3a55d1",
+        "Analysis": "Essa fórmula está definindo como queremos exibir as vendas no dashboard \"Apontamento de ordens de serviço de assistência técnica\". \n\nImagine que você tem três opções de filtros no seu dashboard: \"Clientes\", \"Técnico\" ou \"OS (Ordem de Serviço)\". \n\nA"
+    },
+    {
+        "Measure": "Qtd Técnicos",
+        "Formula": "DISTINCTCOUNT(fApontamentoManut[cod-matr]) formatString: 0 lineageTag: 0fbaeaf6-30f5-4f2c-8a29-ac9bc40a1ef2",
+        "Analysis": "A medida **DISTINCTCOUNT(fApontamentoManut[cod-matr])**, exibida no visual \"Total Faturado\" da página \"Gerencial\",  **conta quantas ordens de serviço de assistência técnica únicas foram registradas**. \n\nEm outras palavras, o dashboard \"Apontamento"
+    },
+    {
+        "Measure": "Faturamento Bruto",
+        "Formula": "```  SUMX(fVenda,fVenda[VALOR_TOTAL]) ``` lineageTag: fd7250bd-b58b-422d-abfc-83ba90d75de2  annotation PBI_FormatHint = {\"isGeneralNumber\":true}",
+        "Analysis": "Essa medida no seu dashboard \"Apontamento de ordens de serviço de assistência técnica\" calcula o **total de todos os valores das suas ordens de serviço**. \n\nImagine que cada linha na sua planilha \"fVenda\" representa uma ordem de serviço com um valor"
+    },
+    {
+        "Measure": "Custo Total Mensal",
+        "Formula": "CALCULATE(SUMX(fApontamentoManut,fApontamentoManut[Total Hora Decimal]) * MAXX(dCustoHora,dCustoHora[Custo Hora]),fOrdemManutencao[cod-tipo] <> \"cs\") formatString: \"R$\"#,0.00;-\"R$\"#,0.00;\"R$\"#,0.00 lineageTag: e1029caa-49e0-4631-b135-78deb5c57658  annotation PBI_FormatHint = {\"currencyCulture\":\"es-BR\"}",
+        "Analysis": "Essa medida calcula o **custo total das horas trabalhadas em ordens de serviço de assistência técnica**, excluindo as ordens do tipo \"cs\". \n\nEm termos simples:\n\n1. **Agarra todas as ordens de serviço:** Ela começa olhando para todas as informações"
+    },
+    {
+        "Measure": "Margem",
+        "Formula": "CALCULATE( [Faturamento Liquido] - [Custo Total Mensal], fOrdemManutencao[cod-tipo] <> \"cs\" ) lineageTag: c57ba46c-625b-48e5-bd9d-ea4b979a8d3b  annotation PBI_FormatHint = {\"isGeneralNumber\":true}",
+        "Analysis": "Essa medida mostra o **lucro**  gerado pelas ordens de serviço de assistência técnica, **excluindo** as ordens com código \"cs\". \n\nPara calcular esse lucro, a fórmula **SUBTRAÍ** o **Custo Total Mensal** do **Faturamento Líquido**.\n\nEm outras"
+    },
+    {
+        "Measure": "Margem %",
+        "Formula": "CALCULATE(DIVIDE([Margem],SUMX(fOrdemManutencao,fOrdemManutencao[Valor Liquido]),0),fOrdemManutencao[cod-tipo] <> \"cs\") formatString: 0.00%;-0.00%;0.00% lineageTag: 777c5575-41cf-4e89-ad0c-f4702adfdbd0",
+        "Analysis": "Esta medida calcula a **margem de lucro percentual** das ordens de serviço de assistência técnica, excluindo as  **ordens de tipo \"cs\"**. \n\n**Explicando de forma simples:**\n\nImagine que você sabe quanto dinheiro a empresa ganha em cada serviço que"
+    },
+    {
+        "Measure": "xTitulo Profit Margin",
+        "Formula": "\"Profit Margin by \" & SWITCH( TRUE(), SELECTEDVALUE('ParâmetroFaturamentoMeta'[Parâmetro Pedido]) = 0 , \"Customers\", SELECTEDVALUE('ParâmetroFaturamentoMeta'[Parâmetro Pedido]) = 1 , \"Technician\", SELECTEDVALUE('ParâmetroFaturamentoMeta'[Parâmetro Pedido]) = 2 , \"OS\", \"\") lineageTag: 1dfc9281-0e3c-4f46-a0ad-ff2c130f1c41",
+        "Analysis": "Essa medida calcula a **Margem de Lucro** de acordo com um critério escolhido. \n\nImagine que você está olhando os dados de ordens de serviço de assistência técnica e quer saber o lucro de acordo com quem está gerando a receita: clientes, técnicos ou"
+    },
+    {
+        "Measure": "Faturamento Liquido",
+        "Formula": "SUMX(fOrdemManutencao,fOrdemManutencao[Valor Liquido]) formatString: \"R$\"#,0.00;-\"R$\"#,0.00;\"R$\"#,0.00 lineageTag: 8ac037ec-35fe-46f1-875d-b7da5d78efa8  annotation PBI_FormatHint = {\"currencyCulture\":\"es-BR\"}  partition _Medidas-e45b2b0d-e36b-4ae2-8454-cbe117da01de = m mode: import source = let Fonte = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText(\"i44FAA==\", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [#\"Coluna 1\" = _t]), #\"Tipo Alterado\" = Table.TransformColumnTypes(Fonte,{{\"Coluna 1\", type text}}), #\"Colunas Removidas\" = Table.RemoveColumns(#\"Tipo Alterado\",{\"Coluna 1\"}) in #\"Colunas Removidas\"  annotation PBI_ResultType = Table",
+        "Analysis": "Essa medida calcula o **total arrecadado** com as ordens de serviço de assistência técnica. \n\nImagine que cada ordem de serviço tem um valor, como R$100.  A fórmula  `SUMX(fOrdemManutencao,fOrdemManutencao[Valor Liquido])`  somaria todos esses"
     }
 ]

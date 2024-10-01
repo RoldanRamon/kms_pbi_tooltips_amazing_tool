@@ -31,11 +31,11 @@ def sidebar_inputs():
         
         # Opção de seleção dos modelos disponíveis no GROQ
         modelo = st.selectbox("Escolha o modelo:", (
+            'gemma2-9b-it',
             'llama-3.1-70b-versatile',
+            'llama3-groq-70b-8192-tool-use-preview',
             'gemma-7b-it',
             'distil-whisper-large-v3-en',
-            'gemma2-9b-it',
-            'llama3-groq-70b-8192-tool-use-preview',
             'llama3-groq-8b-8192-tool-use-preview',
             'llama-3.1-8b-instant',
             'llama-guard-3-8b',

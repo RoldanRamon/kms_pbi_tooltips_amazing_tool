@@ -44,7 +44,7 @@ def analyze_formulas(input_json_path, output_json_path=None, model_name=None, re
     if not model_name:
         print("Modelo não fornecido.")
         sys.exit(1)
-    
+
     api_key = load_api_key()
     client = Groq(api_key=api_key)
 
@@ -52,8 +52,8 @@ def analyze_formulas(input_json_path, output_json_path=None, model_name=None, re
     with open(input_json_path, 'r', encoding='utf-8') as f:
         measures = json.load(f)
 
-    # Cria um mapeamento de medidas para títulos de visuais
-    measure_to_visual_titles = {}
+    # Cria um mapeamento de medidas para informações de visual e aba
+    measure_to_visual_info = {}
 
     if report_json_path:
         with open(report_json_path, 'r', encoding='utf-8') as f:
@@ -62,6 +62,7 @@ def analyze_formulas(input_json_path, output_json_path=None, model_name=None, re
         # Verifica se "sections" existe e aplica as mudanças nos containers visuais
         if "sections" in report_data:
             for section in report_data["sections"]:
+                display_name = section.get('displayName', None)
                 if "visualContainers" in section:
                     for container in section["visualContainers"]:
                         # Faz o parse do campo config
@@ -92,9 +93,12 @@ def analyze_formulas(input_json_path, output_json_path=None, model_name=None, re
                                     visual_title = extract_value_from_expr(title_expr)
 
                         if measure_name and visual_title:
-                            if measure_name not in measure_to_visual_titles:
-                                measure_to_visual_titles[measure_name] = []
-                            measure_to_visual_titles[measure_name].append(visual_title)
+                            if measure_name not in measure_to_visual_info:
+                                measure_to_visual_info[measure_name] = []
+                            measure_to_visual_info[measure_name].append({
+                                'visual_title': visual_title,
+                                'tab_name': display_name
+                            })
 
     # Processa cada medida
     for measure in measures:
@@ -104,10 +108,25 @@ def analyze_formulas(input_json_path, output_json_path=None, model_name=None, re
             measure['Analysis'] = 'Fórmula não disponível.'
             continue
 
-        visual_titles = measure_to_visual_titles.get(measure_name, [])
-        if visual_titles:
-            visual_titles_str = ', '.join(set(visual_titles))  # Remove duplicatas se houver
-            visual_titles_text = f"A medida é usada no(s) visual(is) com título(s): {visual_titles_str}. "
+        visual_infos = measure_to_visual_info.get(measure_name, [])
+
+        # Inicializa as variáveis com valores padrão
+        visual_titles_str = ''
+        tab_names_str = ''
+
+        if visual_infos:
+            # Agrupa os títulos dos visuais e nomes das abas
+            visual_titles = set()
+            tab_names = set()
+            for info in visual_infos:
+                visual_titles.add(info['visual_title'])
+                if info['tab_name']:
+                    tab_names.add(info['tab_name'])
+
+            visual_titles_str = ', '.join(visual_titles)
+            tab_names_str = ', '.join(tab_names)
+
+            visual_titles_text = f"A medida é usada no(s) visual(is) com título(s): {visual_titles_str} na(s) aba(s): {tab_names_str}. "
         else:
             visual_titles_text = ''
 
@@ -116,16 +135,26 @@ def analyze_formulas(input_json_path, output_json_path=None, model_name=None, re
 
         # Exemplo de resposta
         exemplo_resposta = (
-            "Essa medida calcula o total de vendas somando os valores de todas as transações. "
+            "Total de vendas no período de 2024 para a região de Pinhais. "
             "É exibida no gráfico 'Vendas por Região'."
         )
 
         # Formatar a mensagem para enviar à API
+        # Ajuste para lidar com casos onde visual_titles_str e tab_names_str podem estar vazios
+        if visual_titles_str and tab_names_str:
+            visual_info_part = f"dentro do visual '{visual_titles_str}' que está na página '{tab_names_str}'."
+        elif visual_titles_str:
+            visual_info_part = f"dentro do visual '{visual_titles_str}'."
+        elif tab_names_str:
+            visual_info_part = f"na página '{tab_names_str}'."
+        else:
+            visual_info_part = "sem associação a nenhum visual ou página específica."
+
         mensagem = (
-            f"Crie uma descrição clara e objetiva, no contexto da dashboard: {dashboard_text}, para uma pessoa não técnica,"
-            f"explicando a fórmula: {formula} dentro do visual {visual_titles_text}."
-            f"A resposta deve concluir o raciocinio em no máximo 250 caracteres do idioma portugues do Brasil."
-            f"Aqui está um exemplo lúdico de como a resposta deve ser: '{exemplo_resposta}'"
+            f"Análise o contexto da dashboard: {dashboard_text} e faça uma explicação clara e objetiva, para uma pessoa não técnica, "
+            f"da fórmula: {formula} dentro do visual {visual_titles_str} que esta na página {tab_names_str}."
+            f"A resposta deve ser portugues do Brasil."
+            f"Aqui está um exemplo lúdico de resposta: '{exemplo_resposta}'"
         )
 
         try:
@@ -138,6 +167,7 @@ def analyze_formulas(input_json_path, output_json_path=None, model_name=None, re
                     }
                 ],
                 model=model_name,
+                max_tokens=1500,
             )
             # Obter o conteúdo da resposta
             analysis = chat_completion.choices[0].message.content.strip()

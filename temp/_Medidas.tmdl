@@ -1,29 +1,411 @@
 table _Medidas
-	lineageTag: 90abe7da-0b5c-4771-af0f-4bf14ddd3c04
+	lineageTag: 96e0619c-1df1-4da0-8002-eee52a6ca840
 
-	measure teste =
+	measure 'Horas OM' =
 			
-			var bananas = 2
-			var pera =2
-			RETURN bananas + pera
+			VAR vHorasDecimal =
+			    SUM ( fApontamentoManut[Total Hora Decimal] )
+			VAR vHoras =
+			    INT ( vHorasDecimal )
+			VAR vMinutosDecimal = 60 * ( vHorasDecimal - vHoras )
+			VAR vMinutos =
+			    INT ( vMinutosDecimal )
+			VAR vSegundos =
+			    ROUND ( 60 * ( vMinutosDecimal - vMinutos ), 0 )
+			VAR vHH =
+			    FORMAT ( vHoras, "00" )
+			VAR vMM =
+			    FORMAT ( vMinutos, "00" )
+			VAR vSS =
+			    FORMAT ( vSegundos, "00" )
+			RETURN
+			    IF (
+			        CONVERT ( vHH & vMM & vSS, STRING )
+			            = BLANK (),
+			        CONVERT ( vHH & vMM & vSS, STRING ),
+			        FORMAT ( CONVERT ( vHH & vMM & vSS, INTEGER ), "00:00:00" )
+			    )
+		lineageTag: 795063cf-ba0b-4c05-ba34-06be777b6a54
+
+	measure 'xDias OM' =
+			
+			SUMX ( fApontamentoManut, fApontamentoManut[Total Hora Decimal] ) / 24
+		lineageTag: 37f36a95-382f-48f2-a88e-1ed6b3465ba8
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Tempo Médio OM' =
+			
+			VAR vHorasDecimal =
+			    SUM ( fApontamentoManut[Total Hora Decimal] ) / COUNTROWS ( fApontamentoManut )
+			VAR vHoras =
+			    INT ( vHorasDecimal )
+			VAR vMinutosDecimal = 60 * ( vHorasDecimal - vHoras )
+			VAR vMinutos =
+			    INT ( vMinutosDecimal )
+			VAR vSegundos =
+			    ROUND ( 60 * ( vMinutosDecimal - vMinutos ), 0 )
+			VAR vHH =
+			    FORMAT ( vHoras, "00" )
+			VAR vMM =
+			    FORMAT ( vMinutos, "00" )
+			VAR vSS =
+			    FORMAT ( vSegundos, "00" )
+			RETURN
+			    IF (
+			        CONVERT ( vHH & vMM & vSS, STRING )
+			            = BLANK (),
+			        CONVERT ( vHH & vMM & vSS, STRING ),
+			        FORMAT ( CONVERT ( vHH & vMM & vSS, INTEGER ), "00:00:00" )
+			    )
+		lineageTag: 5313a87b-d39e-4b94-978b-dcede087c5b7
+
+	measure Faturamento = ```
+			
+			CALCULATE(
+			        SUMX(fVenda,fVenda[VALOR_LIQUIDO]),
+			        CROSSFILTER(fVenda[DIM_CLIENTE_ID], dEmitente[DIM_EMITENTE_ID], Both))
+			        
+			```
+		formatString: "R$"\ #,0;-"R$"\ #,0;"R$"\ #,0
+		lineageTag: bf99bdc6-30be-4900-90d5-dbf5e8c78a74
+
+		changedProperty = FormatString
+
+		annotation PBI_FormatHint = {"currencyCulture":"pt-BR"}
+
+	measure 'Qtd OM' = DISTINCTCOUNT(fOrdemManutencao[nr-ord-produ])
+		formatString: #,0
+		lineageTag: e4210a55-6c9a-4a5b-902e-fe5e44a0dd71
+
+	measure 'Km total' = SUMX(fApontamentoManut, fApontamentoManut[km-final] - fApontamentoManut[km-inicial])
+		lineageTag: bd9b6a9f-b3c5-4bdf-bb80-ef73cc501407
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Qtde Técnicos' = DISTINCTCOUNT(dTecnicos[Matr.])
 		formatString: 0
-		lineageTag: e0ca5b10-f026-4dd4-8ae1-f4415e960df5
+		lineageTag: 4a79e874-7bea-4a91-bb70-b8a8c40854f9
 
-	column Value
-		dataType: int64
-		isHidden
+	measure 'Horas Técnicos' =
+			
+			VAR vHorasDecimal =
+			    SUM ( dCalendario[Horas Técnicos])
+			VAR vHoras =
+			    INT ( vHorasDecimal )
+			VAR vMinutosDecimal = 60 * ( vHorasDecimal - vHoras )
+			VAR vMinutos =
+			    INT ( vMinutosDecimal )
+			VAR vSegundos =
+			    ROUND ( 60 * ( vMinutosDecimal - vMinutos ), 0 )
+			VAR vHH =
+			    FORMAT ( vHoras, "00" )
+			VAR vMM =
+			    FORMAT ( vMinutos, "00" )
+			VAR vSS =
+			    FORMAT ( vSegundos, "00" )
+			RETURN
+			    IF (
+			        CONVERT ( vHH & vMM & vSS, STRING )
+			            = BLANK (),
+			        CONVERT ( vHH & vMM & vSS, STRING ),
+			        FORMAT ( CONVERT ( vHH & vMM & vSS, INTEGER ), "00:00:00" )
+			    )
+		lineageTag: f6306433-a9e9-4cae-8e46-a17b922608eb
+
+	measure 'Horas Uteis Mes' =
+			
+			CALCULATE(
+			        DISTINCTCOUNT(dCalendario[Date]) * 8.4,
+			        dCalendario[Dia Util] = 1 && dCalendario[Feriados] = BLANK())
+		lineageTag: 375c4a4d-0fb0-48aa-a2b3-7cedf5377d4e
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Horas Extra Técnico' =
+			
+			IF(
+			    [Horas Técnicos Decimal] - [Horas Uteis Mes]  > 0, [Horas Técnicos Decimal] - [Horas Uteis Mes] , 0)
+		lineageTag: ece4a2ad-ad75-4c87-a0f2-5149017264be
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Horas Técnicos Decimal' = SUMX(fApontamentoManut,fApontamentoManut[Total Hora Decimal])
+		formatString: #,0.00
+		lineageTag: bdfc811e-29f0-4b5e-ab1e-90300d094451
+
+	measure 'Horas Técnicos Internal' =
+			
+			CALCULATE(
+			        SUMX(fApontamentoManut,fApontamentoManut[Total Hora Decimal]),
+			        fApontamentoManut[cc-codigo] = "27002")
+		lineageTag: 7ea39909-9536-4258-b9d8-459cfe4b171d
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Horas a Menos Técnico' =
+			
+			var uteis = [Horas Uteis Mes]
+			RETURN uteis - [Horas Técnicos Decimal]
+		lineageTag: 2e61e8b8-04f8-48e9-bf70-9bdad25796c7
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Horas Técnicos Ineficiencia' =
+			
+			CALCULATE(
+			        [Horas Técnicos Decimal],
+			        fOrdemManutencao[cod-tipo] = "IN")
+		lineageTag: 60a81f43-30c3-4385-aa9f-dbd02b269c30
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Qtde OM Mês Anterior' =
+			
+			CALCULATE( [Qtd OM] , DATEADD(dCalendario[Date],-1,MONTH))
 		formatString: 0
-		lineageTag: e1ce6c40-acac-4a2f-8dde-a307a8c453cd
-		summarizeBy: sum
-		isNameInferred
-		isDataTypeInferred
-		sourceColumn: [Value]
+		lineageTag: fa9e95d6-b11c-4dcd-8228-febce782c3ed
 
-		annotation SummarizationSetBy = Automatic
+	measure '% OM Mes Anterior' =
+			
+			DIVIDE( [Qtd OM] - [Qtde OM Mês Anterior], [Qtde OM Mês Anterior] , 0)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: f6646d5a-9a9a-4f85-aa19-b43db05d628d
 
-	partition _Medidas = calculated
+	measure 'Horas Uteis Mes Total' =
+			
+			CALCULATE(
+			        (DISTINCTCOUNT(dCalendario[Date]) * 8.67) * [Qtde Técnicos],
+			        dCalendario[Dia Util] = 1 && dCalendario[Feriados] = BLANK())
+		lineageTag: 71621d43-3f2d-44c5-adcf-0557e256301c
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Horas Uteis Mes Atual - Horas Técnicos' = [Horas Uteis Mes Total] - [Horas Técnicos Decimal]
+		lineageTag: e92daffa-f73a-487d-ba2f-a40094230fc9
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Horas Técnicos Decimal Sem Extra' = SUMX(fApontamentoManut,fApontamentoManut[Total Hora Decimal]) - [Horas Extra Técnico]
+		lineageTag: d48eee6f-b3c2-4b91-a407-93ad61200d54
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Horas Técnicos Decimal Sem Extra Total' = (SUMX(fApontamentoManut,fApontamentoManut[Total Hora Decimal]) - [Horas Extra Técnico]) * [Qtde Técnicos]
+		lineageTag: 9757a3b7-6c22-4181-b89e-afc22a4b1a94
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Qtde de Notas' = DISTINCTCOUNT(fVenda[NOTA])
+		formatString: 0
+		lineageTag: 442e2e1d-e175-4fe6-ad7d-9fe8725cc44c
+
+	measure 'Valor Apontamento' = SUMX(fApontamentoManut,fApontamentoManut[vl-tot-custo])
+		formatString: "R$"\ #,0.0;-"R$"\ #,0.0;"R$"\ #,0.0
+		lineageTag: e57a4edb-b167-4f8e-aa9b-ebb56b2bff4a
+
+		annotation PBI_FormatHint = {"currencyCulture":"pt-BR"}
+
+	measure 'Ticket Médio' =
+			
+			DIVIDE([Faturamento], [Qtde de Notas], 0 )
+		formatString: "R$"\ #,0;-"R$"\ #,0;"R$"\ #,0
+		lineageTag: ed6eb9fd-622f-4c22-a12c-7d28dcbe85eb
+
+		annotation PBI_FormatHint = {"currencyCulture":"pt-BR"}
+
+	measure 'Qtde Clientes' = DISTINCTCOUNT(fVenda[DIM_CLIENTE_ID])
+		formatString: 0
+		lineageTag: 2c360e1c-d8cd-4182-9105-d389d6f84adf
+
+	measure 'Qtde Técnicos Mês' = DISTINCTCOUNT(fApontamentoManut[cod-matr])
+		formatString: 0
+		lineageTag: 591cee30-9fe0-44c6-9885-0b411eb425c9
+
+	measure Meta = SUMX(dMetas, dMetas[valor])
+		formatString: "R$"\ #,0;-"R$"\ #,0;"R$"\ #,0
+		lineageTag: ec0e1369-05c0-455a-9e00-9bf99101309e
+
+		annotation PBI_FormatHint = {"currencyCulture":"pt-BR"}
+
+	measure '% Meta' = DIVIDE( [Faturamento] , [Meta] ,  0 )
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 5af37a8f-9078-404c-b978-facfa085e367
+
+	measure 'Dias Uteis Meta Atual' =
+			
+			CALCULATE(
+			        SUMX( dCalendario, dCalendario[Dia Util] ),
+			        DATESBETWEEN(dCalendario[Data Assistencia (compartimentos)],STARTOFMONTH(dCalendario[Data Assistencia (compartimentos)]),TODAY()-2))
+		formatString: 0
+		lineageTag: 94bc9cc9-75fc-40f4-8228-5e485e9f178d
+
+	measure 'Meta Projetada' =
+			
+			Var DiasRealizados = DIVIDE( [Meta] , SUMX(dCalendario, dCalendario[Dia Util]) , 0)
+			return
+			DiasRealizados*[Dias Uteis Meta Atual]
+		formatString: "R$"\ #,0;-"R$"\ #,0;"R$"\ #,0
+		lineageTag: 7834aa71-b633-4af6-9d52-d4a3cc6dac36
+
+		annotation PBI_FormatHint = {"currencyCulture":"pt-BR"}
+
+	measure 'Dif Meta Projetada Serviços' = [Faturamento] - [Meta Projetada]
+		formatString: "R$"\ #,0;-"R$"\ #,0;"R$"\ #,0
+		lineageTag: d7723c5b-5638-48ef-a7b3-937f59d37020
+
+		annotation PBI_FormatHint = {"currencyCulture":"pt-BR"}
+
+	measure 'Faturamento LY' =
+			
+			var UltDtVenda =
+			CALCULATE(
+			         LASTDATE(fVenda[DT_EMIS]),
+			         ALL(fVenda)
+			)
+			var DataLimite = EDATE(UltDtVenda,-12)
+			return
+			CALCULATE([Faturamento],
+			        SAMEPERIODLASTYEAR(dCalendario[Date]),
+			        FILTER(ALL(dCalendario), dCalendario[Date] <= DataLimite)
+			)
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		lineageTag: ce59771d-ae37-4531-8075-3db93a483859
+
+		annotation PBI_FormatHint = {"currencyCulture":"pt-BR"}
+
+	measure 'Faturamento LM' =
+			
+			var UltDtVenda =
+			CALCULATE(
+			         LASTDATE(fVenda[DT_EMIS]),
+			         ALL(fVenda)
+			)
+			var DataLimite = EDATE(UltDtVenda,-1)
+			return
+			CALCULATE([Faturamento],
+			        SAMEPERIODLASTYEAR(dCalendario[Date]),
+			        FILTER(ALL(dCalendario), dCalendario[Date] <= DataLimite)
+			)
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		lineageTag: 79bde43a-8d6a-4547-af0c-4743f83785cd
+
+		annotation PBI_FormatHint = {"currencyCulture":"pt-BR"}
+
+	measure '% Faturamento LY' =
+			
+			DIVIDE( [Faturamento] , [Faturamento LY] , 0 )
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 220a0d22-2f08-42e3-a6e9-58bcf8e28c3c
+
+	measure '% Faturamento LM' =
+			
+			DIVIDE( [Faturamento] , [Faturamento LM] , 0 )
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 6e238951-c5a3-4106-86e7-bb47917aee46
+
+	measure 'Auxiliar Meta' = 1 - ([% Meta] + [Auxiliar Meta Prevista])
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 1c431244-9737-4667-b0b2-fc4eca29e5ec
+
+	measure 'Dias Uteis Realizados' =
+			
+			CALCULATE(
+			        [Dias Uteis Meta Atual],
+			        dCalendario[MesAnoAssistenciaHoje] = "Mês Corrente")
+		formatString: 0
+		lineageTag: 2d93db18-98b6-4c53-8f67-829c17b1d506
+
+	measure 'Meta Prevista' =
+			
+			var vMetaPrevista = DIVIDE([Meta], [Dias Uteis Meta Atual],0)
+			
+			return
+			vMetaPrevista * [Dias Uteis Realizados]
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		lineageTag: 77d4b5f3-c3af-401d-a76b-51fff938a78f
+
+		annotation PBI_FormatHint = {"currencyCulture":"pt-BR"}
+
+	measure '% Meta Prevista' =
+			
+			DIVIDE( [Meta Prevista] , [Meta] , 0 )
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 99d21306-9e4f-4758-8231-38f19f0182ee
+
+	measure 'Auxiliar Meta Prevista' = ```
+			[% Meta Prevista] - [% Meta] 
+			```
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: af579125-cc1f-40d1-a694-08063d21eedd
+
+	measure 'xTitulo Faturamento Meta' =
+			"Sales by " &
+			SWITCH(
+			        TRUE(),
+			        SELECTEDVALUE('ParâmetroFaturamentoMeta'[Parâmetro Pedido]) = 0 , "Customers",
+			        SELECTEDVALUE('ParâmetroFaturamentoMeta'[Parâmetro Pedido]) = 1 , "Technician",
+			        SELECTEDVALUE('ParâmetroFaturamentoMeta'[Parâmetro Pedido]) = 2 , "OS",
+			        "")
+		lineageTag: 1ff1b482-78d3-413e-a64d-6ecaca3a55d1
+
+	measure 'Qtd Técnicos' = DISTINCTCOUNT(fApontamentoManut[cod-matr])
+		formatString: 0
+		lineageTag: 0fbaeaf6-30f5-4f2c-8a29-ac9bc40a1ef2
+
+	measure 'Faturamento Bruto' = ```
+			
+			        SUMX(fVenda,fVenda[VALOR_TOTAL])
+			```
+		lineageTag: fd7250bd-b58b-422d-abfc-83ba90d75de2
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Custo Total Mensal' = CALCULATE(SUMX(fApontamentoManut,fApontamentoManut[Total Hora Decimal]) * MAXX(dCustoHora,dCustoHora[Custo Hora]),fOrdemManutencao[cod-tipo] <> "cs")
+		formatString: "R$"#,0.00;-"R$"#,0.00;"R$"#,0.00
+		lineageTag: e1029caa-49e0-4631-b135-78deb5c57658
+
+		annotation PBI_FormatHint = {"currencyCulture":"es-BR"}
+
+	measure Margem =
+			
+			CALCULATE(
+			    [Faturamento Liquido] - [Custo Total Mensal],
+			    fOrdemManutencao[cod-tipo] <> "cs"
+			)
+		lineageTag: c57ba46c-625b-48e5-bd9d-ea4b979a8d3b
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Margem %' = CALCULATE(DIVIDE([Margem],SUMX(fOrdemManutencao,fOrdemManutencao[Valor Liquido]),0),fOrdemManutencao[cod-tipo] <> "cs")
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 777c5575-41cf-4e89-ad0c-f4702adfdbd0
+
+	measure 'xTitulo Profit Margin' =
+			"Profit Margin by " &
+			SWITCH(
+			        TRUE(),
+			        SELECTEDVALUE('ParâmetroFaturamentoMeta'[Parâmetro Pedido]) = 0 , "Customers",
+			        SELECTEDVALUE('ParâmetroFaturamentoMeta'[Parâmetro Pedido]) = 1 , "Technician",
+			        SELECTEDVALUE('ParâmetroFaturamentoMeta'[Parâmetro Pedido]) = 2 , "OS",
+			        "")
+		lineageTag: 1dfc9281-0e3c-4f46-a0ad-ff2c130f1c41
+
+	measure 'Faturamento Liquido' = SUMX(fOrdemManutencao,fOrdemManutencao[Valor Liquido])
+		formatString: "R$"#,0.00;-"R$"#,0.00;"R$"#,0.00
+		lineageTag: 8ac037ec-35fe-46f1-875d-b7da5d78efa8
+
+		annotation PBI_FormatHint = {"currencyCulture":"es-BR"}
+
+	partition _Medidas-e45b2b0d-e36b-4ae2-8454-cbe117da01de = m
 		mode: import
-		source = {1}
+		source =
+				let
+				    Fonte = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [#"Coluna 1" = _t]),
+				    #"Tipo Alterado" = Table.TransformColumnTypes(Fonte,{{"Coluna 1", type text}}),
+				    #"Colunas Removidas" = Table.RemoveColumns(#"Tipo Alterado",{"Coluna 1"})
+				in
+				    #"Colunas Removidas"
 
-	annotation PBI_Id = 108c9446db3447669fc041fb4204182e
+	annotation PBI_ResultType = Table
 
